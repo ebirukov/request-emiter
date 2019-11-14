@@ -1,0 +1,11 @@
+image: maven:3.3.9-jdk-8
+
+variables:
+  MAVEN_OPTS: -Dmaven.repo.local=/cache/maven.repository
+
+stages:
+  - test
+
+test:
+  stage: test
+  script: "mvn test compile -B"
