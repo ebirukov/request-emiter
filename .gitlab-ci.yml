@@ -7,5 +7,7 @@ stages:
   - test
 
 test:
+  tags:
+   - analysts-scripts
   stage: test
   script: "mvn test compile -B"
