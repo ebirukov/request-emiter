@@ -2,8 +2,11 @@ package com.drimmi.rtb;
 
 public class ProcessResult {
 
-    private final int numOfSuccess;
-    private final int numOfFailed;
+    private int numOfSuccess;
+    private int numOfFailed;
+
+    public ProcessResult() {
+    }
 
     public ProcessResult(int numOfSuccess, int numOfFailed) {
         this.numOfSuccess = numOfSuccess;
@@ -16,5 +19,13 @@ public class ProcessResult {
 
     public int getNumOfFailed() {
         return numOfFailed;
+    }
+
+    public void incrementFailed() {
+        numOfFailed += 1;
+    }
+
+    public void incrementSuccess() {
+        numOfSuccess += 1;
     }
 }

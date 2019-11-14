@@ -6,14 +6,33 @@ import static org.junit.Assert.*;
 
 public class RTBRequestProcessorTest {
 
+    ISenderService senderService = mock(ISenderService.class);
+
+    RTBRequestProcessor requestProcessor = new RTBRequestProcessor(senderService);
+
     @Test
     public void processRequestsTest() {
-        int numOfRequests = 10;
-        ISenderService senderService = mock(ISenderService.class);
-        ProcessResult result = new ProcessResult(numOfRequests, 0);
-        when(senderService.sendRequests(numOfRequests)).thenReturn(result);
-        assertEquals(0, senderService.sendRequests(numOfRequests).getNumOfFailed() );
-        assertEquals(10, senderService.sendRequests(numOfRequests).getNumOfSuccess() );
+
+        when(senderService.sendRequest()).thenReturn(false);
+
+        ProcessResult result = requestProcessor.processRequests(10);
+
+        assertTrue(result != null);
+        assertEquals(10, result.getNumOfFailed());
+        assertEquals(0, result.getNumOfSuccess());
+
+
+        when(senderService.sendRequest()).thenReturn(true);
+
+        result = requestProcessor.processRequests(5);
+
+        assertTrue(result != null);
+        assertEquals(0, result.getNumOfFailed());
+        assertEquals(5, result.getNumOfSuccess());
+
+
+
+
     }
 
 }
