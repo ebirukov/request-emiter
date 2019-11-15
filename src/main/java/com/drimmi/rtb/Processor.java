@@ -1,5 +1,5 @@
 package com.drimmi.rtb;
 
-public interface ISenderService {
+public interface Processor {
     boolean sendRequest();
 }

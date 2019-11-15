@@ -1,6 +1,6 @@
 package com.drimmi.rtb;
 
-public class SequenceSenderService implements ISenderService {
+public class SequenceProcessor implements Processor {
 
     @Override
     public boolean sendRequest() {

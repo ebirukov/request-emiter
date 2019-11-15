@@ -4,16 +4,16 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
-public class RTBRequestProcessorTest {
+public class RTBRequestEmitterTest {
 
-    ISenderService senderService = mock(ISenderService.class);
+    Processor processor = mock(Processor.class);
 
-    RTBRequestProcessor requestProcessor = new RTBRequestProcessor(senderService);
+    RTBRequestEmitter requestProcessor = new RTBRequestEmitter(processor);
 
     @Test
     public void processRequestsTest() {
 
-        when(senderService.sendRequest()).thenReturn(false);
+        when(processor.sendRequest()).thenReturn(false);
 
         ProcessResult result = requestProcessor.processRequests(10);
 
@@ -22,7 +22,7 @@ public class RTBRequestProcessorTest {
         assertEquals(0, result.getNumOfSuccess());
 
 
-        when(senderService.sendRequest()).thenReturn(true);
+        when(processor.sendRequest()).thenReturn(true);
 
         result = requestProcessor.processRequests(5);
 

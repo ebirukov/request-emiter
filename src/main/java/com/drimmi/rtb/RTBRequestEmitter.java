@@ -1,12 +1,12 @@
 package com.drimmi.rtb;
 
-public class RTBRequestProcessor {
+public class RTBRequestEmitter {
 
-    ISenderService senderService;
+    Processor processor;
 
 
-    public RTBRequestProcessor(ISenderService senderService) {
-        this.senderService = senderService;
+    public RTBRequestEmitter(Processor processor) {
+        this.processor = processor;
     }
 
 
@@ -14,7 +14,7 @@ public class RTBRequestProcessor {
         ProcessResult processResult = new ProcessResult();
         for (int i = 0; i < numOfRequests; i++) {
 
-            boolean result = senderService.sendRequest();
+            boolean result = processor.sendRequest();
             if (result) {
                 processResult.incrementSuccess();
             } else {
