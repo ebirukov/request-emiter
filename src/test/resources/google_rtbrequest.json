@@ -1,0 +1,143 @@
+{
+  "id": "a4DiQ5zaFys16y8BF15geP",
+  "imp": [
+    {
+      "id": "1",
+      "banner": {
+        "w": 300,
+        "h": 250,
+        "expdir": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "format": [
+          {
+            "w": 300,
+            "h": 250
+          },
+          {
+            "w": 320,
+            "h": 100
+          }
+        ]
+      },
+      "displaymanager": "GOOGLE",
+      "tagid": "7338697129",
+      "bidfloor": 0.06,
+      "bidfloorcur": "USD",
+      "secure": true,
+      "metric": [
+        {
+          "type": "click_through_rate",
+          "value": 0.00296411314047873,
+          "vendor": "EXCHANGE"
+        },
+        {
+          "type": "viewability",
+          "value": 0.55,
+          "vendor": "EXCHANGE"
+        }
+      ],
+      "ext": {
+        "billing_id": [
+          31256586872
+        ],
+        "dfp_ad_unit_code": "/1201209/google/test",
+        "ampad": 3
+      }
+    }
+  ],
+  "site": {
+    "page": "https://www.google.com",
+    "publisher": {
+      "id": "pub-5874644840058555",
+      "ext": {
+        "country": "DE"
+      }
+    },
+    "content": {
+      "contentrating": "DV-T",
+      "language": "de"
+    },
+    "mobile": true,
+    "ext": {
+      "amp": 0
+    }
+  },
+  "device": {
+    "ua": "Mozilla/5.0 (Linux; Android 9; SM-G965F Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/77.0.3865.92 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/239.0.0.41.152;]",
+    "ip": "192.168.1.0",
+    "geo": {
+      "country": "USA",
+      "region": "US-NY",
+      "city": "New York",
+      "utcoffset": 120
+    },
+    "make": "samsung",
+    "model": "sm-g965f",
+    "os": "android",
+    "osv": "9",
+    "devicetype": 4,
+    "w": 412,
+    "h": 846,
+    "pxratio": 2.625
+  },
+  "user": {
+    "id": "sfh8g4AC83zE05SvzvBNL767p77",
+    "buyeruid": "4lcdQi45a0zj3n710fFjtoN9yQ0635z9",
+    "customdata": "1Tf74w4MJte6o950i21541nI0v9Z561s4Z197Q12F8rz1R1F",
+    "data": [
+      {
+        "id": "DetectedVerticals",
+        "name": "DoubleClick",
+        "segment": [
+          {
+            "id": "930",
+            "value": "0.2"
+          },
+          {
+            "id": "1311",
+            "value": "0.2"
+          }
+        ]
+      }
+    ],
+    "ext": {
+      "consented_providers_settings": {
+        "consented_providers": [
+          "574",
+          "2526"
+        ]
+      }
+    }
+  },
+  "at": 1,
+  "tmax": 162,
+  "cur": [
+    "USD"
+  ],
+  "regs": {
+    "ext": {
+      "gdpr": true
+    }
+  },
+  "ext": {
+    "bid_feedback": [
+      {
+        "request_id": "Pxx43AN6956K0o29VZUywX",
+        "creative_status_code": 79,
+        "buyer_creative_id": "test_creative_id_137662",
+        "minimum_bid_to_win": 1.079956
+      },
+      {
+        "request_id": "Pxx43AN6956K0o29VZUywX",
+        "creative_status_code": 1,
+        "buyer_creative_id": "test_creative_id_137662",
+        "minimum_bid_to_win": 0.75258
+      }
+    ],
+    "google_query_id": "ANy-zo65BQ-7B5g150G76Tu1f6BAS0kKB43It6FUSxcfY22aV8u3h5413OYa1o62UdxZe791"
+  }
+}
