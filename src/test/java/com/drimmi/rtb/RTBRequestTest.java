@@ -7,6 +7,7 @@ import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -22,6 +23,8 @@ import java.util.UUID;
 import static com.google.openrtb.OpenRtb.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+
+//https://fixad.tech/wp-content/uploads/2019/02/3-bid-request-examples.pdf
 
 public class RTBRequestTest {
 
