@@ -1,6 +1,8 @@
 package com.drimmi.rtb;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.TreeNode;
 import com.google.doubleclick.*;
 
 import static com.google.openrtb.OpenRtb.*;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.LongStream;
 
+import static com.google.openrtb.json.OpenRtbJsonUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -43,16 +46,37 @@ public class GoogleRTBRequestTest {
 
     @Test
     public  void testJsonFactory() throws IOException {
-        OpenRtbJsonExtReader<BidRequest.Imp.Builder> reader = new OpenRtbJsonExtReader<BidRequest.Imp.Builder>() {
+        OpenRtbJsonExtReader<BidRequest.Builder> reader = new OpenRtbJsonExtReader<BidRequest.Builder>() {
             @Override
-            protected void read(BidRequest.Imp.Builder msg, JsonParser par) throws IOException {
-                System.err.println(par.getText());
-                msg.setExtension(AdxExt.imp, ImpExt.newBuilder().addAllBillingId(Arrays.asList(1L)).build());
+            protected void read(BidRequest.Builder msg, JsonParser par) throws IOException {
+                if (par.currentToken() == JsonToken.FIELD_NAME) {
+                    String fieldName = getCurrentName(par);
+                    switch (fieldName) {
+                        case "billing_id":
+                            for (startArray(par); endArray(par); par.nextToken()) {
+                                System.out.println(par.getText());
+                            }
+                            break;
+                        case "google_query_id":
+                            AdxExt.BidRequestExt.Builder extBuilder = AdxExt.BidRequestExt.newBuilder().setGoogleQueryId(par.nextTextValue());
+                            msg.setExtension(AdxExt.bidRequest, extBuilder.build());
+                            System.out.println(par.nextTextValue());
+                            break;
+                        case "ampad":
+                            System.out.println("ampad val " + par.nextTextValue());
+                            break;
+                        default:
+                            //System.out.println(par.getText());
+
+                    }
+                }
+
+                //msg.setExtension(AdxExt.imp, ImpExt.newBuilder().addAllBillingId(Arrays.asList(1L)).build());
 
             }
         };
         OpenRtbJsonFactory openRTBJson = OpenRtbJsonFactory.create()
-                .register(reader, BidRequest.Imp.Builder.class )
+                .register(reader, BidRequest.Builder.class )
                 ;
 
         BidRequest request = openRTBJson.newReader().readBidRequest(rtbrequest);
@@ -74,15 +98,17 @@ public class GoogleRTBRequestTest {
 
         JsonFormat.TypeRegistry typeRegistry = JsonFormat.TypeRegistry.newBuilder()
                 .add(Any.getDescriptor())
-                .add(BidResponseExt.getDescriptor())
+                //.add(BidResponseExt.getDescriptor())
                 .build();
 
         ExtensionRegistry registry = ExtensionRegistry.newInstance();
 
         BidRequest.Builder requestBuilder = BidRequest.newBuilder()
 /*            .setId("1")
+//                .setExtension(AdxExt.ext, AdxExt.BidRequestExt.newBuilder().setGoogleQueryId("321").build())
+
             .addImp(BidRequest.Imp.newBuilder()
-                    //.setExtension("ext", ImpExt.newBuilder().addAllBillingId(Arrays.asList(1L)).build())
+                    .setExtension(AdxExt.ext, AdxExt.ImpExt.newBuilder().addAllBillingId(Arrays.asList(1L)).build())
                     .setInstl(true)
                     .setId("123")
                     .build())*/

@@ -1,6 +1,5 @@
 // Protocol version: v.40
 import "openrtb.proto";
-option java_multiple_files = true;
 option java_outer_classname = "AdxExt";
 package com.google.doubleclick;
 
@@ -90,7 +89,7 @@ message ImpExt {
 
 extend com.google.openrtb.BidRequest.Imp {
     // Extension key for AdX Imp.ext.
-    optional ImpExt imp = 1009;
+    optional ImpExt ext = 1009;
 }
 
 message AppExt {

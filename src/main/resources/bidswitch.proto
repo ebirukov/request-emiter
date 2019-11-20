@@ -1,0 +1,207 @@
+syntax = "proto2";
+import "openrtb.proto";
+option java_outer_classname = "BidSwitchExt";
+package com.powerspace.bidswitch;
+
+message BidRequestExt {
+    required AdsTxt ads_txt = 1001;
+    required string ssp = 1002;
+    required string media_src = 1003;
+    optional Google google = 1004;
+    optional Gumgum gumgum = 1005;
+    optional Rubicon rubicon = 1006;
+    optional AdTruth adtruth = 1007;
+    optional Tv tv = 1008;
+    optional Dooh dooh = 1009;
+    optional int32 clktrkrq = 1010;
+    optional int32 s2s_nurl = 1011;
+    optional int32 is_secure = 1012;
+    optional float wt = 1013;
+
+    message AdsTxt {
+        required int32 status = 1001;
+        optional string auth_id = 1002;
+        required string pub_id = 1003;
+    }
+
+    message Google {
+        repeated DetectedVertical detected_vertical = 1001;
+
+        message DetectedVertical {
+            required int32 id = 1001;
+            required float weight = 1002;
+        }
+    }
+
+    message Gumgum {
+        repeated string cat = 1001;
+    }
+
+    message Rubicon {
+        required int32 ast = 1001;
+    }
+
+    message AdTruth {
+        optional int64 tdl_millis = 1001;
+        required string recipe_version_x = 1002;
+    }
+
+    message Publisher {
+        required string id = 1001;
+        optional string name = 1002;
+        repeated string cat = 1003;
+        optional string domain = 1004;
+    }
+
+    message Tv {
+        required Publisher publisher = 1001;
+    }
+
+    message Dooh {
+        required Publisher publisher = 1001;
+        optional float audience = 1002;
+        optional float impmultiply = 1003;
+    }
+}
+
+extend com.google.openrtb.BidRequest {
+    optional BidRequestExt bidRequestExt = 1000;
+}
+
+
+message BidResponseExt {
+    optional string protocol = 1;
+}
+
+extend com.google.openrtb.BidResponse {
+    optional BidResponseExt bidResponseExt = 1000;
+}
+
+message BidExt {
+    optional string asid = 1001;
+    optional string country = 1002;
+    optional string advertiser_name = 1003;
+    optional string agency_name = 1004;
+    optional string agency_id = 1005;
+    repeated string lpdomain = 1006;
+    optional string language = 1007;
+    optional string vast_url = 1008;
+    optional string daast_url = 1009;
+    optional int32 duration = 1010;
+    optional string deal = 1011;
+    optional string img_url = 1012;
+    optional string click_url = 1013;
+    optional string js_url = 1014;
+    optional Google google = 1015;
+    optional Yieldone yieldone = 1016;
+    optional com.google.openrtb.NativeResponse native = 1017;
+
+    message Google {
+        repeated int32 attribute = 1001;
+        repeated int32 vendor_type = 1002;
+    }
+
+    message Yieldone {
+        optional string creative_type = 1001;
+        optional int32 creative_category_id = 1002;
+    }
+}
+
+extend com.google.openrtb.BidResponse.SeatBid.Bid {
+    optional BidExt bidExt = 1000;
+}
+
+message NativeResponseExt {
+    optional string viewtracker = 1001;
+    optional string adchoiceurl = 1002;
+}
+
+extend com.google.openrtb.NativeResponse {
+    optional NativeResponseExt responseNativeExt = 1000;
+}
+
+message ImpressionExt {
+    required Google google = 1001;
+    optional Yieldone yieldone = 1002;
+    optional int32 inventory_class = 1003;
+    optional int32 viewability = 1004;
+    optional int32 s2s_nurl = 1005;
+
+    message Google {
+        repeated int32 excluded_attribute = 1001;
+        repeated int32 allowed_vendor_type = 1002;
+    }
+
+    message Yieldone {
+        repeated string allowed_creative_types = 1001;
+        repeated int32 allowed_creative_category_id = 1002;
+        repeated int32 cat = 1003;
+        optional int32 inventory_class = 1004;
+    }
+}
+
+extend com.google.openrtb.BidRequest.Imp {
+    optional ImpressionExt impressionExt = 1000;
+}
+
+message Format {
+    required int32 h = 1001;
+    required int32 w = 1002;
+}
+
+message BannerExt {
+    repeated Format extra_sizes = 1001;
+}
+
+extend com.google.openrtb.BidRequest.Imp.Banner {
+    optional BannerExt bannerExt = 1000;
+}
+
+
+message VideoExt {
+    required int32 skippable = 1001;
+    required int32 player_type = 1002;
+    optional int32 outstream = 1003;
+    optional int32 vast_url_rq = 1004;
+}
+
+extend com.google.openrtb.BidRequest.Imp.Video {
+    optional VideoExt videoExt = 1000;
+}
+
+message UserExt {
+    required int32 ug = 1001;
+    optional int32 cookie_age = 1002;
+    optional DigiTrust digitrust = 1003;
+    repeated int32 google_consent = 1004;
+    optional string consent = 1005;
+
+    message DigiTrust {
+        required string id = 1001;
+        optional int32 keyv = 1002;
+    }
+}
+
+extend com.google.openrtb.BidRequest.User {
+    optional UserExt userExt = 1000;
+}
+
+message DealExt {
+    optional string data_src = 1001;
+}
+
+extend com.google.openrtb.BidRequest.Imp.Pmp.Deal {
+    optional DealExt dealExt = 1000;
+}
+
+message NativeExt {
+    optional TripleLift triplelift = 1001;
+
+    message TripleLift {
+        repeated int32 formats = 1001;
+    }
+}
+
+extend com.google.openrtb.BidRequest.Imp.Native {
+    optional NativeExt requestNativeExt = 1000;
+}
