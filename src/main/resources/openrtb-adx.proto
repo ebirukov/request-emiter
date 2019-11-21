@@ -89,7 +89,7 @@ message ImpExt {
 
 extend com.google.openrtb.BidRequest.Imp {
     // Extension key for AdX Imp.ext.
-    optional ImpExt ext = 1009;
+    optional ImpExt imp = 1009;
 }
 
 message AppExt {

@@ -7,6 +7,7 @@ import com.google.doubleclick.*;
 
 import static com.google.openrtb.OpenRtb.*;
 
+import com.google.doubleclick.openrtb.json.AdxExtUtils;
 import com.google.openrtb.OpenRtb;
 import com.google.openrtb.json.OpenRtbJsonExtReader;
 import com.google.openrtb.json.OpenRtbJsonFactory;
@@ -40,30 +41,34 @@ public class GoogleRTBRequestTest {
     public void init() throws IOException {
         rtbrequestPath = Paths.get("src/test/resources/google_rtbrequest.json");
         rtbrequest = Files.newBufferedReader(rtbrequestPath);
+
         AdxExt.registerAllExtensions(ExtensionRegistry.newInstance());
 
     }
 
     @Test
     public  void testJsonFactory() throws IOException {
-        OpenRtbJsonExtReader<BidRequest.Builder> reader = new OpenRtbJsonExtReader<BidRequest.Builder>() {
+        OpenRtbJsonExtReader<BidRequest.Imp.Builder> reader = new OpenRtbJsonExtReader<BidRequest.Imp.Builder>() {
             @Override
-            protected void read(BidRequest.Builder msg, JsonParser par) throws IOException {
+            protected void read(BidRequest.Imp.Builder msg, JsonParser par) throws IOException {
                 if (par.currentToken() == JsonToken.FIELD_NAME) {
                     String fieldName = getCurrentName(par);
+                    par.nextToken();
                     switch (fieldName) {
+
                         case "billing_id":
+
                             for (startArray(par); endArray(par); par.nextToken()) {
                                 System.out.println(par.getText());
                             }
                             break;
                         case "google_query_id":
                             AdxExt.BidRequestExt.Builder extBuilder = AdxExt.BidRequestExt.newBuilder().setGoogleQueryId(par.nextTextValue());
-                            msg.setExtension(AdxExt.bidRequest, extBuilder.build());
+                            //msg.setExtension(AdxExt.bidRequest, extBuilder.build());
                             System.out.println(par.nextTextValue());
                             break;
                         case "ampad":
-                            System.out.println("ampad val " + par.nextTextValue());
+                            System.out.println("ampad val " + par.getText());
                             break;
                         default:
                             //System.out.println(par.getText());
@@ -76,9 +81,9 @@ public class GoogleRTBRequestTest {
             }
         };
         OpenRtbJsonFactory openRTBJson = OpenRtbJsonFactory.create()
-                .register(reader, BidRequest.Builder.class )
+                .register(reader, BidRequest.Imp.Builder.class )
                 ;
-
+        AdxExtUtils.registerAdxExt(openRTBJson);
         BidRequest request = openRTBJson.newReader().readBidRequest(rtbrequest);
 
         System.out.println(JsonFormat.printer().print(request));
