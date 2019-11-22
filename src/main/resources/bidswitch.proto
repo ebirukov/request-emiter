@@ -4,9 +4,9 @@ option java_outer_classname = "BidSwitchExt";
 package com.powerspace.bidswitch;
 
 message BidRequestExt {
-    required AdsTxt ads_txt = 1001;
+    optional AdsTxt ads_txt = 1001;
     required string ssp = 1002;
-    required string media_src = 1003;
+    optional string media_src = 1003;
     optional Google google = 1004;
     optional Gumgum gumgum = 1005;
     optional Rubicon rubicon = 1006;

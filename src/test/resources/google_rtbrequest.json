@@ -27,7 +27,7 @@
       "tagid": "7338697129",
       "bidfloor": 0.06,
       "bidfloorcur": "USD",
-      "secure": true,
+      "secure": 1,
       "metric": [
         {
           "type": "click_through_rate",

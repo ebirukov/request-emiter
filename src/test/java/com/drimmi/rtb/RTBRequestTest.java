@@ -1,11 +1,15 @@
 package com.drimmi.rtb;
 
+import com.drimmi.rtb.reader.bidswitch.BidSwitchExtUtils;
 import com.google.doubleclick.AdxExt;
+import com.google.doubleclick.openrtb.json.AdxExtUtils;
 import com.google.openrtb.OpenRtb;
+import com.google.openrtb.json.OpenRtbJsonFactory;
 import com.google.protobuf.Extension;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
+import com.powerspace.bidswitch.BidSwitchExt;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.openrtb.OpenRtb.*;
 import static org.junit.Assert.*;
@@ -28,21 +33,50 @@ import static org.junit.Assert.assertEquals;
 
 public class RTBRequestTest {
 
-    BufferedReader rtbrequest;
-    Path rtbrequestPath;
 
-    @Before
-    public void init() throws IOException {
-        rtbrequestPath = Paths.get("src/test/resources/rtbrequest.json");
-        rtbrequest = Files.newBufferedReader(rtbrequestPath);
+
+    @Test
+    public void testBidSwitchRequestExt() throws IOException {
+
+        String resourcePath = "src/test/resources/bidswitch-bidrequest.json";
+        Path rtbRequestPath = Paths.get(resourcePath);
+        BufferedReader reader = Files.newBufferedReader(rtbRequestPath);
+        String jsonContent = new String(Files.readAllBytes(rtbRequestPath), "UTF-8");
+        //System.out.println(jsonContent);
+        OpenRtbJsonFactory jsonFactory = OpenRtbJsonFactory.create();
+        BidSwitchExtUtils.registerBidSwitchExt(jsonFactory);
+        BidRequest bidRequest = jsonFactory.newReader().readBidRequest(reader);
+        assertEquals("pubnative", bidRequest.getExtension(BidSwitchExt.bidRequestExt).getSsp());
+        System.out.println(jsonFactory.newWriter().writeBidRequest(bidRequest));
     }
 
     @Test
-    public void test() throws IOException {
+    public void testOpenRTBRequestGoogleExt() throws IOException {
+
+        String resourcePath = "src/test/resources/google_rtbrequest.json";
+        Path rtbRequestPath = Paths.get(resourcePath);
+        BufferedReader reader = Files.newBufferedReader(rtbRequestPath);
+        //String jsonContent = new String(Files.readAllBytes(rtbRequestPath), "UTF-8");
+        OpenRtbJsonFactory jsonFactory = OpenRtbJsonFactory.create();
+        AdxExtUtils.registerAdxExt(jsonFactory);
+        BidRequest bidRequest = jsonFactory.newReader().readBidRequest(reader);
+
+        assertEquals(bidRequest.getImp(0).getInstl(), false);
+        //assertEquals(jsonContent, jsonFactory.newWriter().writeBidRequest(bidRequest));
+    }
+
+
+    @Test
+    public void testOpenRTBRequest() throws IOException {
+        String resourcePath = "src/test/resources/rtbrequest.json";
+        Path rtbRequestPath = Paths.get(resourcePath);
+        BufferedReader rtbRequest = Files.newBufferedReader(rtbRequestPath);
+
         BidRequest.Builder requestBuilder = BidRequest.newBuilder();
 
-        Files.lines(rtbrequestPath).forEach(System.out::println);
-        JsonFormat.parser().ignoringUnknownFields().merge(rtbrequest, requestBuilder);
+        //Files.lines(rtbRequestPath).forEach(System.out::println);
+        JsonFormat.parser().ignoringUnknownFields().merge(rtbRequest, requestBuilder);
+
         BidRequest request = requestBuilder.build();
         assertNotNull(request);
         assertNotNull(request.getId());
@@ -52,7 +86,6 @@ public class RTBRequestTest {
         BidRequest.Imp imp = request.getImp(0);
         assertFalse(imp.getInstl());
         assertBanner(imp.getBanner());
-        //assertEquals(0, imp.getExtensionCount());
         assertSite(request.getSite());
         assertDevice(request.getDevice());
         assertUser(request.getUser());

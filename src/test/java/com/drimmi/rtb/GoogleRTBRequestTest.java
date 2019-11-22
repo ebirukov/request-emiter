@@ -1,5 +1,6 @@
 package com.drimmi.rtb;
 
+import com.drimmi.rtb.reader.bidswitch.BidSwitchExtUtils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.TreeNode;
@@ -16,6 +17,7 @@ import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.TextFormat;
 import com.google.protobuf.util.JsonFormat;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -42,48 +44,15 @@ public class GoogleRTBRequestTest {
         rtbrequestPath = Paths.get("src/test/resources/google_rtbrequest.json");
         rtbrequest = Files.newBufferedReader(rtbrequestPath);
 
-        AdxExt.registerAllExtensions(ExtensionRegistry.newInstance());
-
     }
 
     @Test
     public  void testJsonFactory() throws IOException {
-        OpenRtbJsonExtReader<BidRequest.Imp.Builder> reader = new OpenRtbJsonExtReader<BidRequest.Imp.Builder>() {
-            @Override
-            protected void read(BidRequest.Imp.Builder msg, JsonParser par) throws IOException {
-                if (par.currentToken() == JsonToken.FIELD_NAME) {
-                    String fieldName = getCurrentName(par);
-                    par.nextToken();
-                    switch (fieldName) {
-
-                        case "billing_id":
-
-                            for (startArray(par); endArray(par); par.nextToken()) {
-                                System.out.println(par.getText());
-                            }
-                            break;
-                        case "google_query_id":
-                            AdxExt.BidRequestExt.Builder extBuilder = AdxExt.BidRequestExt.newBuilder().setGoogleQueryId(par.nextTextValue());
-                            //msg.setExtension(AdxExt.bidRequest, extBuilder.build());
-                            System.out.println(par.nextTextValue());
-                            break;
-                        case "ampad":
-                            System.out.println("ampad val " + par.getText());
-                            break;
-                        default:
-                            //System.out.println(par.getText());
-
-                    }
-                }
-
-                //msg.setExtension(AdxExt.imp, ImpExt.newBuilder().addAllBillingId(Arrays.asList(1L)).build());
-
-            }
-        };
         OpenRtbJsonFactory openRTBJson = OpenRtbJsonFactory.create()
-                .register(reader, BidRequest.Imp.Builder.class )
+                /*.register(reader, BidRequest.Imp.Builder.class )*/
                 ;
         AdxExtUtils.registerAdxExt(openRTBJson);
+
         BidRequest request = openRTBJson.newReader().readBidRequest(rtbrequest);
 
         System.out.println(JsonFormat.printer().print(request));
@@ -91,48 +60,21 @@ public class GoogleRTBRequestTest {
     }
 
     @Test
+    @Ignore
     public void parseRequest() throws IOException {
-        //ExtensionRegistry reg = ExtensionRegistry.newInstance();
-        //AdxExt.registerAllExtensions(reg);
-        //OpenRtb.BidRequest.Imp.newBuilder().set
-/*        AdxExt.ImpExt.newBuilder()
-                .setField()
-                .build()
-        Any.pack()*/
-
 
         JsonFormat.TypeRegistry typeRegistry = JsonFormat.TypeRegistry.newBuilder()
                 .add(Any.getDescriptor())
-                //.add(BidResponseExt.getDescriptor())
                 .build();
 
         ExtensionRegistry registry = ExtensionRegistry.newInstance();
 
-        BidRequest.Builder requestBuilder = BidRequest.newBuilder()
-/*            .setId("1")
-//                .setExtension(AdxExt.ext, AdxExt.BidRequestExt.newBuilder().setGoogleQueryId("321").build())
-
-            .addImp(BidRequest.Imp.newBuilder()
-                    .setExtension(AdxExt.ext, AdxExt.ImpExt.newBuilder().addAllBillingId(Arrays.asList(1L)).build())
-                    .setInstl(true)
-                    .setId("123")
-                    .build())*/
-
-            ;
-        //System.out.println(JsonFormat.printer().print(requestBuilder.build()));
-        //Files.lines(rtbrequestPath).forEach(System.out::println);
+        BidRequest.Builder requestBuilder = BidRequest.newBuilder();
         JsonFormat.Parser parser = JsonFormat.parser().usingTypeRegistry(typeRegistry);
 
-
-
-
         parser.ignoringUnknownFields().merge(rtbrequest, requestBuilder);
-        //TextFormat.getParser().merge(rtbrequest, reg, requestBuilder);
         BidRequest request = requestBuilder.build();
 
-/*        AdxExt.ImpExt.parseFrom(
-                imp.getUnknownFields().getField(AdxExt.imp.getNumber())
-                        .getLengthDelimitedList().get(0));*/
 
         assertNotNull(request);
         assertNotNull(request.getId());
