@@ -5,6 +5,7 @@ import com.google.doubleclick.AdxExt;
 import com.google.doubleclick.openrtb.json.AdxExtUtils;
 import com.google.openrtb.OpenRtb;
 import com.google.openrtb.json.OpenRtbJsonFactory;
+import com.google.openrtb.util.OpenRtbUtils;
 import com.google.protobuf.Extension;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -47,6 +48,7 @@ public class RTBRequestTest {
         BidSwitchExtUtils.registerBidSwitchExt(jsonFactory);
         BidRequest bidRequest = jsonFactory.newReader().readBidRequest(reader);
         assertEquals("pubnative", bidRequest.getExtension(BidSwitchExt.bidRequestExt).getSsp());
+        assertEquals("pub_id", bidRequest.getExtension(BidSwitchExt.bidRequestExt).getAdsTxt().getPubId());
         System.out.println(jsonFactory.newWriter().writeBidRequest(bidRequest));
     }
 
