@@ -1,4 +1,4 @@
-image: maven:3.3.9-jdk-8
+image: maven:3.6.2-jdk-11
 
 variables:
   MAVEN_OPTS: -Dmaven.repo.local=/cache/maven.repository
