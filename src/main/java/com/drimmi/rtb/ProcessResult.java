@@ -1,31 +1,35 @@
 package com.drimmi.rtb;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ProcessResult {
 
-    private int numOfSuccess;
-    private int numOfFailed;
+    private AtomicInteger numOfSuccess;
+    private AtomicInteger numOfFailed;
 
     public ProcessResult() {
+        numOfFailed = new AtomicInteger(0);
+        numOfSuccess = new AtomicInteger(0);
     }
 
     public ProcessResult(int numOfSuccess, int numOfFailed) {
-        this.numOfSuccess = numOfSuccess;
-        this.numOfFailed = numOfFailed;
+        this.numOfSuccess = new AtomicInteger(numOfSuccess);
+        this.numOfFailed = new AtomicInteger(numOfFailed);
     }
 
     public int getNumOfSuccess() {
-        return numOfSuccess;
+        return numOfSuccess.get();
     }
 
     public int getNumOfFailed() {
-        return numOfFailed;
+        return numOfFailed.get();
     }
 
     public void incrementFailed() {
-        numOfFailed += 1;
+        numOfFailed.incrementAndGet();
     }
 
     public void incrementSuccess() {
-        numOfSuccess += 1;
+        numOfSuccess.incrementAndGet();
     }
 }

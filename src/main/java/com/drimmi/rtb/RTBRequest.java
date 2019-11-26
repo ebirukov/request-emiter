@@ -1,14 +1,17 @@
 package com.drimmi.rtb;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class RTBRequest {
 
-    private String content;
+    private Collection<String> content = new ArrayList<>();
 
-    public String getContent() {
+    public Collection<String> getContent() {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void addContent(String content) {
+        this.content.add(content);
     }
 }

@@ -4,25 +4,27 @@ public class RTBRequestEmitter {
 
     Processor processor;
 
+    EmitterConfiguration configuration;
 
-    public RTBRequestEmitter(Processor processor) {
+    RequestExecutor executor ;
+
+
+    public RTBRequestEmitter(Processor processor, EmitterConfiguration configuration, RequestExecutor executor) {
         this.processor = processor;
+        this.configuration = configuration;
+        this.executor = executor;
     }
 
 
-    public ProcessResult processRequests(int numOfRequests) {
-        ProcessResult processResult = new ProcessResult();
-        for (int i = 0; i < numOfRequests; i++) {
+    public ProcessResult processRequests() {
+        var rtbRequest = new RequestGenerator().generate(configuration);
+        return executor.execute(rtbRequest);
 
-            boolean result = processor.sendRequest();
-            if (result) {
-                processResult.incrementSuccess();
-            } else {
-                processResult.incrementFailed();
-            }
+    }
 
-        }
-        return processResult;
-
+    public static void main(String[] args) {
+        EmitterConfiguration configuration = new ConfigurationParser(args).getConfiguration();
+        var emitter = new RTBRequestEmitter(new SequenceProcessor(), configuration, new RequestExecutor(configuration));
+        var processResult = emitter.processRequests();
     }
 }

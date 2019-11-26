@@ -12,33 +12,67 @@ import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class RequestExecutor {
 
-    HttpClient client = HttpClient.newBuilder()
-            .followRedirects(HttpClient.Redirect.ALWAYS)
-            .version(HttpClient.Version.HTTP_1_1)
-            .build();
+    HttpClient client;
 
-    HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
-            .uri(URI.create("http://rtb.dmdata.org:8888/rtb/bids/nexage"));
-            
+    ProcessResult result;
 
-    ProcessResult result = new ProcessResult();
+    HttpRequest.Builder httpRequestBuilder;
 
-    public int execute(RTBRequest rtbRequest) throws IOException {
-        var status = 200;
-        var json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
-        HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(json)).build();
-        client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+    CompletableFuture[] futures;
+
+    public RequestExecutor(EmitterConfiguration config) {
+        this.result = new ProcessResult();
+        client = HttpClient.newBuilder()
+                .executor(Executors.newFixedThreadPool(config.getNumOfParallelWorker()))
+                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
+        this.httpRequestBuilder = HttpRequest.newBuilder()
+                .uri(URI.create(config.getUrl()));
+    }
+
+    public ProcessResult execute(RTBRequest rtbRequest) {
+        futures =
+        rtbRequest.getContent()
+                .stream()
+                .map(s -> this.submitJob(s))
+                .toArray(CompletableFuture[]::new);
+
+        CompletableFuture.allOf(futures)
+                .join();
+        return result;
+    }
+
+    private CompletableFuture submitJob(String body) {
+
+        HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(body))
+                .timeout(Duration.ofMillis(3000))
+                .build();
+        return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::statusCode)
                 .thenAccept(this::accumulateResult)
-                .join();
-        return status;
+                .exceptionally(this::onError);
+    }
+
+    private Void onError(Throwable throwable) {
+        result.incrementFailed();
+        return null;
     }
 
     private void accumulateResult(int s) {
-        System.out.println(s);
+        if (s < 300 && s >= 200) {
+            result.incrementSuccess();
+        }
     }
 }
