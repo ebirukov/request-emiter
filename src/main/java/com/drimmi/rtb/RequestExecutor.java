@@ -39,25 +39,21 @@ public class RequestExecutor {
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
         this.httpRequestBuilder = HttpRequest.newBuilder()
-                .uri(URI.create(config.getUrl()));
+                .uri(URI.create(config.getUrl()))
+                .timeout(Duration.ofMillis(config.getRequestTimeout()));
     }
 
     public ProcessResult execute(RTBRequest rtbRequest) {
-        futures =
-        rtbRequest.getContent()
-                .stream()
-                .map(s -> this.submitJob(s))
-                .toArray(CompletableFuture[]::new);
-
-        CompletableFuture.allOf(futures)
-                .join();
+        CompletableFuture.allOf(
+            rtbRequest.buildContentStream()
+                    .map(s -> this.submitJob(s))
+                    .toArray(CompletableFuture[]::new)
+        ).join();
         return result;
     }
 
     private CompletableFuture submitJob(String body) {
-
         HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(body))
-                .timeout(Duration.ofMillis(3000))
                 .build();
         return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::statusCode)
@@ -73,6 +69,8 @@ public class RequestExecutor {
     private void accumulateResult(int s) {
         if (s < 300 && s >= 200) {
             result.incrementSuccess();
+        } else {
+            result.incrementError();
         }
     }
 }

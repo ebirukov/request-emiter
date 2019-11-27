@@ -2,16 +2,17 @@ package com.drimmi.rtb;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 public class RTBRequest {
 
-    private Collection<String> content = new ArrayList<>();
+    private Stream.Builder<String> contentBuilder = Stream.builder();
 
-    public Collection<String> getContent() {
-        return content;
+    public Stream<String> buildContentStream() {
+        return contentBuilder.build();
     }
 
     public void addContent(String content) {
-        this.content.add(content);
+        contentBuilder.add(content);
     }
 }

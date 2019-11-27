@@ -23,8 +23,9 @@ public class RTBRequestEmitter {
     }
 
     public static void main(String[] args) {
-        EmitterConfiguration configuration = new ConfigurationParser(args).getConfiguration();
-        var emitter = new RTBRequestEmitter(new SequenceProcessor(), configuration, new RequestExecutor(configuration));
+        var configuration = new ConfigurationParser(args).getConfiguration();
+        var executor = new RequestExecutor(configuration);
+        var emitter = new RTBRequestEmitter(new SequenceProcessor(), configuration, executor);
         var processResult = emitter.processRequests();
     }
 }

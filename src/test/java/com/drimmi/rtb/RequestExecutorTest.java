@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class RequestExecutorTest {
 
-    public static final int REQUEST_COUNT = 2;
+    public static final int REQUEST_COUNT = 1;
     private final ConfigurationSupport configurationSupport = new ConfigurationSupport();
 
     @Test
@@ -20,15 +20,22 @@ public class RequestExecutorTest {
         EmitterConfiguration config = configurationSupport.getConfiguration();
 
         RequestExecutor requestExecutor = new RequestExecutor(config);
-        RTBRequest request = new RTBRequest();
-        var json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
 
-        IntStream.range(0, config.getNumOfRequests()).mapToObj(i -> json).forEach(request::addContent);
+        var generator = new RequestGenerator();
+        RTBRequest request = generator.generate(config);
+
+//        var json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
+//
+//        IntStream.range(0, config.getNumOfRequests()).mapToObj(i -> json).forEach(request::addContent);
+
+
+
         ProcessResult processResult = requestExecutor.execute(request);
 
         assertNotNull(processResult);
         assertEquals(REQUEST_COUNT, processResult.getNumOfSuccess() + processResult.getNumOfFailed());
         System.err.println(processResult.getNumOfFailed());
         System.out.println(processResult.getNumOfSuccess());
+        System.err.println("error status: " + processResult.getNumOfError());
     }
 }

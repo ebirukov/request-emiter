@@ -7,10 +7,12 @@ public class ConfigurationSupport {
     }
 
     public EmitterConfiguration getConfiguration() {
-        EmitterConfiguration config = Mockito.mock(EmitterConfiguration.class);
+        var config = Mockito.mock(EmitterConfiguration.class);
+
         Mockito.when(config.getNumOfParallelWorker()).thenReturn(EmitterConfiguration.DEFAULT_WORKERS);
         Mockito.when(config.getUrl()).thenReturn(EmitterConfiguration.DEFAULT_URL);
         Mockito.when(config.getNumOfRequests()).thenReturn(RequestExecutorTest.REQUEST_COUNT);
+        Mockito.when(config.getRequestTimeout()).thenReturn(EmitterConfiguration.DEFAULT_TIMEOUT);
         return config;
     }
 }
