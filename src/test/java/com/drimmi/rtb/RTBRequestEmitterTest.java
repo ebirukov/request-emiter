@@ -18,16 +18,13 @@ public class RTBRequestEmitterTest {
 
         RequestExecutor requestExecutor = mock(RequestExecutor.class);
 
-
         RTBRequestEmitter requestProcessor = new RTBRequestEmitter(processor, configuration, requestExecutor);
 
         when(processor.sendRequest()).thenReturn(false);
-        EmitterConfiguration config = configurationSupport.getConfiguration();
+        EmitterConfiguration config = configurationSupport.buildConfiguration(1);
         var result = requestProcessor.processRequests();
 
         assertTrue(result != null);
-/*        assertEquals(10, result.getNumOfFailed());
-        assertEquals(0, result.getNumOfSuccess());*/
 
 
     }

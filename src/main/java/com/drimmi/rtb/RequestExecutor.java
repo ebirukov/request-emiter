@@ -55,7 +55,8 @@ public class RequestExecutor {
     private CompletableFuture submitJob(String body) {
         HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
-        return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+        return client
+                .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::statusCode)
                 .thenAccept(this::accumulateResult)
                 .exceptionally(this::onError);

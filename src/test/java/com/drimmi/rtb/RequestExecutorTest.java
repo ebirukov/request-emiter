@@ -1,41 +1,60 @@
 package com.drimmi.rtb;
 
+
 import org.junit.Test;
+import org.mockito.Answers;
+import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class RequestExecutorTest {
 
-    public static final int REQUEST_COUNT = 1;
     private final ConfigurationSupport configurationSupport = new ConfigurationSupport();
 
     @Test
     public void executeTest() throws IOException {
-        EmitterConfiguration config = configurationSupport.getConfiguration();
+        EmitterConfiguration config = configurationSupport.buildConfiguration(3);
 
         RequestExecutor requestExecutor = new RequestExecutor(config);
 
         var generator = new RequestGenerator(config);
         RTBRequest request = generator.generate();
 
-//        var json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
-//
-//        IntStream.range(0, config.getNumOfRequests()).mapToObj(i -> json).forEach(request::addContent);
+        var client = mock(HttpClient.class);
 
+        requestExecutor.client = client;
 
+        var httpRequest = mock(HttpRequest.class);
+        var httpResponse = mock(HttpResponse.class);
+        when(httpResponse.statusCode())
+                .thenReturn(200)
+                .thenReturn(500);
+
+        var cf = new CompletableFuture<>();
+        cf.completeExceptionally(new RuntimeException());
+
+        when(client.sendAsync(any(HttpRequest.class), any()))
+                .thenReturn(CompletableFuture.completedFuture(httpResponse))
+                .thenReturn(CompletableFuture.completedFuture(httpResponse))
+                .thenReturn(cf);
 
         ProcessResult processResult = requestExecutor.execute(request);
 
         assertNotNull(processResult);
-        assertEquals(REQUEST_COUNT, processResult.getNumOfSuccess() + processResult.getNumOfFailed());
-        System.err.println(processResult.getNumOfFailed());
-        System.out.println(processResult.getNumOfSuccess());
-        System.err.println("error status: " + processResult.getNumOfError());
+        assertEquals(1, processResult.getNumOfSuccess());
+        assertEquals(1, processResult.getNumOfError());
+        assertEquals(1, processResult.getNumOfFailed());
+
     }
 }

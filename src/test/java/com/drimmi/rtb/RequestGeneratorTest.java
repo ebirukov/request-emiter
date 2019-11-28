@@ -9,7 +9,7 @@ public class RequestGeneratorTest {
 
     @Test
     public void generate() {
-        var conf = new ConfigurationSupport().getConfiguration();
+        var conf = new ConfigurationSupport().buildConfiguration(3);
         var generator = new RequestGenerator(conf);
 
         var request = generator.generate();

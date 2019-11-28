@@ -5,7 +5,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,14 +24,15 @@ public class RequestGenerator {
     public RequestGenerator(EmitterConfiguration configuration) {
         this.configuration = configuration;
         try {
-            var rtbRequest = Files.newBufferedReader(Paths.get("src/main/resources/rtbrequest.json"));
+            Path path = Paths.get(Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResource("rtbrequest.json").toURI());
+            var rtbRequest = Files.newBufferedReader(path);
             //this.json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
             requestBuilder = OpenRtb.BidRequest.newBuilder();
-
-            //Files.lines(rtbRequestPath).forEach(System.out::println);
             JsonFormat.parser().ignoringUnknownFields().merge(rtbRequest, requestBuilder);
 
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
