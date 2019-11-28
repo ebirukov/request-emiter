@@ -4,15 +4,24 @@ import com.google.openrtb.OpenRtb;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static java.lang.Thread.*;
+import static java.nio.charset.Charset.*;
+import static java.util.Objects.*;
 
 public class RequestGenerator {
 
@@ -23,16 +32,15 @@ public class RequestGenerator {
 
     public RequestGenerator(EmitterConfiguration configuration) {
         this.configuration = configuration;
-        try {
-            Path path = Paths.get(Thread.currentThread()
-                            .getContextClassLoader()
-                            .getResource("rtbrequest.json").toURI());
-            var rtbRequest = Files.newBufferedReader(path);
-            //this.json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
-            requestBuilder = OpenRtb.BidRequest.newBuilder();
-            JsonFormat.parser().ignoringUnknownFields().merge(rtbRequest, requestBuilder);
+        requestBuilder = OpenRtb.BidRequest.newBuilder();
+        try (InputStreamReader reader = new InputStreamReader(requireNonNull(currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream("rtbrequest.json")), defaultCharset())
+            ) {
 
-        } catch (IOException | URISyntaxException e) {
+            JsonFormat.parser().ignoringUnknownFields().merge(reader, requestBuilder);
+
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

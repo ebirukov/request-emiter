@@ -1,0 +1,2 @@
+#!/bin/bash
+aws batch submit-job --job-name emitter --region us-east-1 --job-queue task-queue-test  --job-definition java --container-overrides '{"command": ["s3://webgames-app-distr/request-emitter/runner.sh"], "environment": [{"name": "ARGS", "value": "--nr 500 --rt 2000 --nb 5"}] }'

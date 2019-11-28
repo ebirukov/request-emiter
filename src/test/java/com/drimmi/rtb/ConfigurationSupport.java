@@ -10,7 +10,7 @@ public class ConfigurationSupport {
         var config = Mockito.mock(EmitterConfiguration.class);
 
         Mockito.when(config.getNumOfParallelWorker()).thenReturn(EmitterConfiguration.DEFAULT_WORKERS);
-        Mockito.when(config.getUrl()).thenReturn(EmitterConfiguration.DEFAULT_URL);
+        Mockito.when(config.getUrl()).thenReturn("http://test.ru");
         Mockito.when(config.getNumOfRequests()).thenReturn(requestCount);
         Mockito.when(config.getRequestTimeout()).thenReturn(EmitterConfiguration.DEFAULT_TIMEOUT);
         return config;
