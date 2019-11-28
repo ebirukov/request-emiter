@@ -37,4 +37,13 @@ public class ProcessResult {
     public void incrementError() {
         numOfError.incrementAndGet();
     }
+
+    @Override
+    public String toString() {
+        return "ProcessResult{" +
+                "numOfError=" + numOfError +
+                ", numOfSuccess=" + numOfSuccess +
+                ", numOfFailed=" + numOfFailed +
+                '}';
+    }
 }

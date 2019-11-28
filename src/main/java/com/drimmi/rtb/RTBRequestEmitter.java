@@ -15,17 +15,24 @@ public class RTBRequestEmitter {
         this.executor = executor;
     }
 
-
     public ProcessResult processRequests() {
-        var rtbRequest = new RequestGenerator().generate(configuration);
-        return executor.execute(rtbRequest);
-
+        var generator = new RequestGenerator(configuration);
+        var processResult = new ProcessResult();
+        for (int i = 0; i < configuration.getBatchSize(); i++) {
+            var rtbRequest = generator.generate();
+            processResult = executor.execute(rtbRequest);
+            System.out.println(processResult);
+        }
+        return processResult;
     }
 
     public static void main(String[] args) {
         var configuration = new ConfigurationParser(args).getConfiguration();
         var executor = new RequestExecutor(configuration);
         var emitter = new RTBRequestEmitter(new SequenceProcessor(), configuration, executor);
-        var processResult = emitter.processRequests();
+        System.out.println(emitter.processRequests());
+
     }
+
+
 }

@@ -20,6 +20,9 @@ public class EmitterConfiguration {
     @Parameter(names = {"-requestTimeout", "--rt"}, description = "request timeout in millisecond")
     private int requestTimeout = DEFAULT_TIMEOUT;
 
+    @Parameter(names = {"-numOfBatch", "--nb"}, description = "number of batch request packet")
+    private int batchSize = 1;
+
     public String getUrl() {
         return url;
     }
@@ -34,5 +37,9 @@ public class EmitterConfiguration {
 
     public int getRequestTimeout() {
         return requestTimeout;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
     }
 }

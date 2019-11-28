@@ -9,9 +9,10 @@ public class RequestGeneratorTest {
 
     @Test
     public void generate() {
-        var generator = new RequestGenerator();
         var conf = new ConfigurationSupport().getConfiguration();
-        var request = generator.generate(conf);
+        var generator = new RequestGenerator(conf);
+
+        var request = generator.generate();
         assertNotNull(request);
 
         var stream = request.buildContentStream();

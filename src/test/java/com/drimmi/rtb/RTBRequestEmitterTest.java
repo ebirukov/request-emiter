@@ -23,10 +23,10 @@ public class RTBRequestEmitterTest {
 
         when(processor.sendRequest()).thenReturn(false);
         EmitterConfiguration config = configurationSupport.getConfiguration();
-        ProcessResult result = requestProcessor.processRequests();
+        var result = requestProcessor.processRequests();
 
-/*        assertTrue(result != null);
-        assertEquals(10, result.getNumOfFailed());
+        assertTrue(result != null);
+/*        assertEquals(10, result.getNumOfFailed());
         assertEquals(0, result.getNumOfSuccess());*/
 
 

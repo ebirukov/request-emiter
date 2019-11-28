@@ -34,7 +34,7 @@ public class RequestExecutor {
     public RequestExecutor(EmitterConfiguration config) {
         this.result = new ProcessResult();
         client = HttpClient.newBuilder()
-                .executor(Executors.newFixedThreadPool(config.getNumOfParallelWorker()))
+                //.executor(Executors.newFixedThreadPool(config.getNumOfParallelWorker()))
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();

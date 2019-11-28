@@ -21,8 +21,8 @@ public class RequestExecutorTest {
 
         RequestExecutor requestExecutor = new RequestExecutor(config);
 
-        var generator = new RequestGenerator();
-        RTBRequest request = generator.generate(config);
+        var generator = new RequestGenerator(config);
+        RTBRequest request = generator.generate();
 
 //        var json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
 //

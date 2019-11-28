@@ -16,10 +16,12 @@ public class RequestGenerator {
     private String json;
 
     OpenRtb.BidRequest.Builder requestBuilder;
+    private EmitterConfiguration configuration;
 
-    public RequestGenerator() {
+    public RequestGenerator(EmitterConfiguration configuration) {
+        this.configuration = configuration;
         try {
-            var rtbRequest = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json"));
+            var rtbRequest = Files.newBufferedReader(Paths.get("src/main/resources/rtbrequest.json"));
             //this.json = Files.newBufferedReader(Paths.get("src/test/resources/rtbrequest.json")).lines().collect(Collectors.joining("")).trim();
             requestBuilder = OpenRtb.BidRequest.newBuilder();
 
@@ -31,7 +33,7 @@ public class RequestGenerator {
         }
     }
 
-    public RTBRequest generate(EmitterConfiguration configuration) {
+    public RTBRequest generate() {
         var rtbRequest = new RTBRequest();
         var jsonPrinter = JsonFormat.printer();
         for (int i = 0; i < configuration.getNumOfRequests(); i++) {
