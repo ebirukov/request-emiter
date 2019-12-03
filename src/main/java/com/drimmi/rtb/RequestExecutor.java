@@ -46,13 +46,13 @@ public class RequestExecutor {
     public ProcessResult execute(RTBRequest rtbRequest) {
         CompletableFuture.allOf(
             rtbRequest.buildContentStream()
-                    .map(s -> this.submitJob(s))
+                    .map(s -> this.send(s))
                     .toArray(CompletableFuture[]::new)
         ).join();
         return result;
     }
 
-    private CompletableFuture submitJob(String body) {
+    public CompletableFuture send(String body) {
         HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         return client
