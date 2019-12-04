@@ -2,8 +2,6 @@ package com.drimmi.rtb.react;
 
 import com.drimmi.rtb.RequestExecutor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -13,7 +11,7 @@ import static java.util.concurrent.Flow.*;
 
 public class HTTPWorker implements Subscriber<String> {
 
-    RequestExecutor executor;
+    private final int numOfRequests;
 
     int numOfBatch;
 
@@ -25,57 +23,55 @@ public class HTTPWorker implements Subscriber<String> {
 
     boolean complete = false;
 
-    public HTTPWorker(RequestExecutor executor, int numOfBatch) {
+    RequestExecutor executor;
+
+    public HTTPWorker(RequestExecutor executor, int numOfRequests, int numOfBatch) {
         this.executor = executor;
+        this.numOfRequests = numOfRequests;
         this.numOfBatch = numOfBatch;
-        futures = new CompletableFuture[numOfBatch];
     }
 
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
+        watchBatchDone();
+        requestData(numOfBatch);
+    }
+
+    private void watchBatchDone() {
         Executors.newSingleThreadExecutor().submit(() -> {
             while (!complete) {
                 Thread.onSpinWait();
                 if (counter.getAcquire() < numOfBatch) continue;
-/*                Stream.of(futures).filter(Predicate.not(CompletableFuture::isDone)).forEach(
-                        cf -> {
-                            try {
-                                System.out.println(cf.get());
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                );*/
-/*                try {
-                    CompletableFuture.allOf(futures).get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }*/
-                requestData();
+                if (Stream.of(futures).filter(Predicate.not(CompletableFuture::isDone)).count() > 0) continue;
                 counter.set(0);
+                requestData(calcNextBatch());
+                System.out.println(executor.getResult());
             }
         });
-        requestData();
     }
 
-    private void requestData() {
+    private int calcNextBatch() {
+        var nextNumOfBatch = executor.getResult().getNumOfSuccess() > 0 ? executor.getResult().getNumOfSuccess() : 1;
+        return nextNumOfBatch;
+    }
+
+    private void requestData(int numOfNextBatch) {
+        numOfBatch = numOfNextBatch;
+        System.out.println("numOfNextBatch " + numOfNextBatch);
+        futures = new CompletableFuture[numOfNextBatch];
         subscription.request(numOfBatch);
     }
 
     @Override
     public void onNext(String item) {
         CompletableFuture cf = executor.send(item);
-        if (counter.get() < numOfBatch) {
+        if (counter.getAcquire() < numOfBatch) {
             futures[counter.getAndIncrement()] = cf;
         } else {
             System.err.println("WTF");
+            counter.set(0);
         }
-        System.out.println("request " + counter + " of batch " + numOfBatch);
     }
 
     @Override
@@ -87,5 +83,6 @@ public class HTTPWorker implements Subscriber<String> {
     public void onComplete() {
         complete = true;
         System.out.println("complete");
+        System.out.println(executor.getResult());
     }
 }

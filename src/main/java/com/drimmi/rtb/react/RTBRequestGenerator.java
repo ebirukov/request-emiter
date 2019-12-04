@@ -2,10 +2,10 @@ package com.drimmi.rtb.react;
 
 import com.drimmi.rtb.RequestGenerator;
 
-import java.util.concurrent.Flow;
+import java.util.concurrent.*;
 import java.util.concurrent.Flow.Subscriber;
-import java.util.concurrent.SubmissionPublisher;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class RTBRequestGenerator {
 
@@ -18,24 +18,26 @@ public class RTBRequestGenerator {
     }
 
     public void subscribe(Subscriber<String> subscriber) {
+
         publisher.subscribe(subscriber);
+/*
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            System.out.println(publisher.estimateMaximumLag());
+        }, 50, 40, TimeUnit.MILLISECONDS);*/
+
     }
 
     public void startPublish() {
         generator.generate().buildContentStream().forEach(item -> {
-            //publisher.offer(item, 100, TimeUnit.MILLISECONDS, this::drop);
+            //publisher.offer(item, this::drop);
             publisher.submit(item);
-            try {
-                TimeUnit.MILLISECONDS.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
         });
         publisher.close();
     }
 
     private boolean drop(Subscriber<? super String> subscriber, String s) {
-        System.out.println(subscriber);
+        System.out.println(s);
         return false;
     }
 

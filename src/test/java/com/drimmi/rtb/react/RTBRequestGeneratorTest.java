@@ -1,22 +1,13 @@
 package com.drimmi.rtb.react;
 
 import com.drimmi.rtb.*;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Mockito.*;
 import org.mockito.Spy;
-import org.mockito.internal.matchers.Any;
-import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
-import org.mockito.verification.After;
-import org.mockito.verification.VerificationAfterDelay;
-import org.mockito.verification.VerificationMode;
 
 import java.util.concurrent.Flow;
 import java.util.stream.Stream;
@@ -37,29 +28,35 @@ public class RTBRequestGeneratorTest {
     @Mock
     RTBRequest request;
 
+    @Spy
+    ProcessResult processResult;
+
     @Test
     public void startPublish() {
 
         Mockito.when(config.getUrl()).thenReturn("http://test.ru");
         Mockito.when(config.getRequestTimeout()).thenReturn(EmitterConfiguration.DEFAULT_TIMEOUT);
 
-        var data = new String[]{"a", "b", "c", "d"};
+        var data = new String[]{"a", "b", "c", "d", "e", "f"};
         var numOfData = data.length;
+        var numOfBatch = 2;
 
         when(request.buildContentStream()).thenReturn(Stream.of(data));
-
-        RequestExecutor executor = spy(new RequestExecutor(config));
-
-        HTTPWorker worker = spy(new HTTPWorker(executor, 2));
-
-        RTBRequestGenerator requestGenerator = new RTBRequestGenerator(generator);
         when(generator.generate()).thenReturn(request);
 
+        RequestExecutor executor = spy(new RequestExecutor(config));
+        HTTPWorker worker = spy(new HTTPWorker(executor, numOfData, numOfBatch));
+
+        when(executor.getResult()).thenReturn(processResult);
+        when(processResult.getNumOfSuccess()).thenReturn(numOfBatch);
+
+        RTBRequestGenerator requestGenerator = new RTBRequestGenerator(generator);
         requestGenerator.subscribe(worker);
         requestGenerator.startPublish();
-        verify(worker, timeout(100)).onSubscribe(any(Flow.Subscription.class));
+
+        verify(worker, timeout(1000)).onSubscribe(any(Flow.Subscription.class));
         var captor = ArgumentCaptor.forClass(String.class);
-        verify(worker, timeout(100).times(numOfData)).onNext(captor.capture());
+        verify(worker, timeout(1000).times(numOfData)).onNext(captor.capture());
         assertArrayEquals(data, captor.getAllValues().toArray());
     }
 }

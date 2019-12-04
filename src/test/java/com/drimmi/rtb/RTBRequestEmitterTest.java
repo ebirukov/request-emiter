@@ -18,7 +18,9 @@ public class RTBRequestEmitterTest {
 
         RequestExecutor requestExecutor = mock(RequestExecutor.class);
 
-        RTBRequestEmitter requestProcessor = new RTBRequestEmitter(processor, configuration, requestExecutor);
+        RequestGenerator generator = mock(RequestGenerator.class);
+
+        RTBRequestEmitter requestProcessor = new RTBRequestEmitter(generator, configuration, requestExecutor);
 
         when(processor.sendRequest()).thenReturn(false);
         EmitterConfiguration config = configurationSupport.buildConfiguration(1);

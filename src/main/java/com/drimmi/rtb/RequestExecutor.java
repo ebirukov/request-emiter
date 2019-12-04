@@ -58,20 +58,29 @@ public class RequestExecutor {
         return client
                 .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::statusCode)
-                .thenAccept(this::accumulateResult)
-                .exceptionally(this::onError);
+                //.thenAccept(this::accumulateResult)
+                .exceptionally(this::onError)
+                .whenComplete(this::accumulateResult)
+                ;
     }
 
-    private Void onError(Throwable throwable) {
-        result.incrementFailed();
-        return null;
+    private int onError(Throwable throwable) {
+        System.out.println(throwable.getMessage());
+        //result.incrementFailed();
+        return 0;
     }
 
-    private void accumulateResult(int s) {
-        if (s < 300 && s >= 200) {
+    private void accumulateResult(int s, Throwable throwable) {
+        if (throwable != null || s == 0) {
+            result.incrementFailed();
+        } else if (s < 300 && s >= 200) {
             result.incrementSuccess();
         } else {
             result.incrementError();
         }
+    }
+
+    public ProcessResult getResult() {
+        return result;
     }
 }

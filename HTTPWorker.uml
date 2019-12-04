@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.drimmi.rtb.react.HTTPWorker</OriginalElement>
+  <nodes>
+    <node x="392.29166666666663" y="486.0">com.drimmi.rtb.react.RTBRequestGenerator</node>
+    <node x="437.625" y="60.0">com.drimmi.rtb.RTBRequest</node>
+    <node x="996.6203703703704" y="0.0">com.drimmi.rtb.ProcessResult</node>
+    <node x="826.7037037037037" y="462.0">com.drimmi.rtb.react.HTTPWorker</node>
+    <node x="0.0" y="318.0">com.drimmi.rtb.ConfigurationParser</node>
+    <node x="602.5925925925926" y="282.0">java.util.concurrent.Flow.Subscriber</node>
+    <node x="124.96759259259261" y="24.0">com.drimmi.rtb.EmitterConfiguration</node>
+    <node x="374.5925925925926" y="318.0">com.drimmi.rtb.RequestGenerator</node>
+    <node x="886.5925925925926" y="294.0">com.drimmi.rtb.RequestExecutor</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.drimmi.rtb.react.HTTPWorker" target="java.util.concurrent.Flow.Subscriber">
+      <point x="-88.0" y="-65.0" />
+      <point x="870.7037037037037" y="437.0" />
+      <point x="800.5925925925926" y="437.0" />
+      <point x="66.0" y="65.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="606.0" y="296.0" />
+  <SelectedNodes>
+    <node>com.drimmi.rtb.react.HTTPWorker</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>packageLocal</VISIBILITY>
+</Diagram>
+
