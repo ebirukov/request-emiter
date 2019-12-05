@@ -16,8 +16,6 @@ public class HTTPRequestExecutor implements JobResult {
 
     HttpRequest.Builder httpRequestBuilder;
 
-    CompletableFuture[] futures;
-
     public HTTPRequestExecutor(EmitterConfiguration config) {
         this.result = new ProcessResult();
         client = HttpClient.newBuilder()
@@ -45,8 +43,7 @@ public class HTTPRequestExecutor implements JobResult {
                 .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::statusCode)
                 .exceptionally(this::onError)
-                .whenComplete(this::accumulateResult)
-                ;
+                .whenComplete(this::accumulateResult);
     }
 
     private int onError(Throwable throwable) {

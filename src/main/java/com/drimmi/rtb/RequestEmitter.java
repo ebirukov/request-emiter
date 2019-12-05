@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class RTBRequestEmitter {
+public class RequestEmitter {
 
     RequestGenerator generator;
 
@@ -16,18 +16,18 @@ public class RTBRequestEmitter {
 
     HTTPRequestExecutor executor ;
 
+    RTBRequestGenerator rtbRequestGenerator;
 
-    public RTBRequestEmitter(RequestGenerator generator, EmitterConfiguration configuration, HTTPRequestExecutor executor) {
+
+    RequestEmitter(RequestGenerator generator, EmitterConfiguration configuration, HTTPRequestExecutor executor, RTBRequestGenerator rtbRequestGenerator) {
         this.generator = generator;
         this.configuration = configuration;
         this.executor = executor;
+        this.rtbRequestGenerator = rtbRequestGenerator;
     }
 
     public ProcessResult reactiveProcess() {
-        HTTPWorker worker = new HTTPWorker(executor, configuration.getNumOfRequests(), configuration.getBatchSize());
-        RTBRequestGenerator requestGenerator = new RTBRequestGenerator(generator);
-        requestGenerator.subscribe(worker);
-        requestGenerator.startPublish();
+        rtbRequestGenerator.startPublish();
         return executor.getResult();
     }
 
@@ -41,21 +41,34 @@ public class RTBRequestEmitter {
         return processResult;
     }
 
-    public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
+    public static void main(String[] args) {
         var configuration = new ConfigurationParser(args).getConfiguration();
-        var executor = new HTTPRequestExecutor(configuration);
-        RequestGenerator generator = new RequestGenerator(configuration);
+        var emitter = RequestEmitter.newBuilder()
+                                    .setConfiguration(configuration)
+                                    .build();
 
-        var emitter = new RTBRequestEmitter(generator, configuration, executor);
         CompletableFuture.supplyAsync(emitter::reactiveProcess)
-                .whenComplete(RTBRequestEmitter::result)
+                .whenComplete(RequestEmitter::result)
                 .join();
-        //System.out.println(emitter.processRequests());
-        TimeUnit.SECONDS.sleep(1);
-        System.out.println(executor.getResult());
     }
 
     private static void result(ProcessResult processResult, Throwable throwable) {
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println(processResult);
+    }
+
+    public static RequestEmitterBuilder newBuilder() {
+        return new RequestEmitterBuilderImpl();
+    }
+
+    interface RequestEmitterBuilder {
+
+        RequestEmitter build();
+
+        RequestEmitterBuilder setConfiguration(EmitterConfiguration configuration);
     }
 }

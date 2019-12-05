@@ -4,7 +4,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
-public class RTBRequestEmitterTest {
+public class RequestEmitterTest {
 
 
 
@@ -20,10 +20,13 @@ public class RTBRequestEmitterTest {
 
         RequestGenerator generator = mock(RequestGenerator.class);
 
-        RTBRequestEmitter requestProcessor = new RTBRequestEmitter(generator, configuration, requestExecutor);
+        EmitterConfiguration config = configurationSupport.buildConfiguration(1);
+        RequestEmitter.RequestEmitterBuilder builder = RequestEmitter.newBuilder().setConfiguration(config);
 
         when(processor.sendRequest()).thenReturn(false);
-        EmitterConfiguration config = configurationSupport.buildConfiguration(1);
+
+        var requestProcessor = builder.build();
+
         var result = requestProcessor.processRequests();
 
         assertTrue(result != null);
