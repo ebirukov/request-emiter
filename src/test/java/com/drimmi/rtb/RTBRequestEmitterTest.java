@@ -16,7 +16,7 @@ public class RTBRequestEmitterTest {
 
         EmitterConfiguration configuration = mock(EmitterConfiguration.class);
 
-        RequestExecutor requestExecutor = mock(RequestExecutor.class);
+        HTTPRequestExecutor requestExecutor = mock(HTTPRequestExecutor.class);
 
         RequestGenerator generator = mock(RequestGenerator.class);
 

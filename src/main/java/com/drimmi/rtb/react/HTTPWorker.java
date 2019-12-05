@@ -1,6 +1,6 @@
 package com.drimmi.rtb.react;
 
-import com.drimmi.rtb.RequestExecutor;
+import com.drimmi.rtb.HTTPRequestExecutor;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,9 +23,9 @@ public class HTTPWorker implements Subscriber<String> {
 
     boolean complete = false;
 
-    RequestExecutor executor;
+    HTTPRequestExecutor executor;
 
-    public HTTPWorker(RequestExecutor executor, int numOfRequests, int numOfBatch) {
+    public HTTPWorker(HTTPRequestExecutor executor, int numOfRequests, int numOfBatch) {
         this.executor = executor;
         this.numOfRequests = numOfRequests;
         this.numOfBatch = numOfBatch;
@@ -46,13 +46,13 @@ public class HTTPWorker implements Subscriber<String> {
                 if (Stream.of(futures).filter(Predicate.not(CompletableFuture::isDone)).count() > 0) continue;
                 counter.set(0);
                 requestData(calcNextBatch());
-                System.out.println(executor.getResult());
+                //System.out.println(result);
             }
         });
     }
 
     private int calcNextBatch() {
-        var nextNumOfBatch = executor.getResult().getNumOfSuccess() > 0 ? executor.getResult().getNumOfSuccess() : 1;
+        var nextNumOfBatch = executor.getNumOfSuccess() > 0 ? executor.getNumOfSuccess() : 1;
         return nextNumOfBatch;
     }
 
@@ -65,9 +65,9 @@ public class HTTPWorker implements Subscriber<String> {
 
     @Override
     public void onNext(String item) {
-        CompletableFuture cf = executor.send(item);
+        CompletableFuture future = executor.send(item);
         if (counter.getAcquire() < numOfBatch) {
-            futures[counter.getAndIncrement()] = cf;
+            futures[counter.getAndIncrement()] = future;
         } else {
             System.err.println("WTF");
             counter.set(0);
@@ -83,6 +83,6 @@ public class HTTPWorker implements Subscriber<String> {
     public void onComplete() {
         complete = true;
         System.out.println("complete");
-        System.out.println(executor.getResult());
+        //System.out.println(result);
     }
 }

@@ -2,23 +2,17 @@ package com.drimmi.rtb;
 
 
 import org.junit.Test;
-import org.mockito.Answers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public class RequestExecutorTest {
+public class HTTPRequestExecutorTest {
 
     private final ConfigurationSupport configurationSupport = new ConfigurationSupport();
 
@@ -26,7 +20,7 @@ public class RequestExecutorTest {
     public void executeTest() throws IOException {
         EmitterConfiguration config = configurationSupport.buildConfiguration(3);
 
-        RequestExecutor requestExecutor = new RequestExecutor(config);
+        HTTPRequestExecutor requestExecutor = new HTTPRequestExecutor(config);
 
         var generator = new RequestGenerator(config);
         RTBRequest request = generator.generate();
@@ -49,12 +43,10 @@ public class RequestExecutorTest {
                 .thenReturn(CompletableFuture.completedFuture(httpResponse))
                 .thenReturn(cf);
 
-        ProcessResult processResult = requestExecutor.execute(request);
+        requestExecutor.execute(request);
 
-        assertNotNull(processResult);
-        assertEquals(1, processResult.getNumOfSuccess());
-        assertEquals(1, processResult.getNumOfError());
-        assertEquals(1, processResult.getNumOfFailed());
+        assertEquals(1, requestExecutor.getNumOfSuccess());
+        assertEquals(2, requestExecutor.getNumOfError());
 
     }
 }

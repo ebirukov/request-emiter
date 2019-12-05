@@ -2,7 +2,7 @@ package com.drimmi.rtb;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ProcessResult {
+class ProcessResult {
 
     private AtomicInteger numOfError;
     private AtomicInteger numOfSuccess;

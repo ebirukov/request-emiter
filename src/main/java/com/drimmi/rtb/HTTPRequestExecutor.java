@@ -1,27 +1,14 @@
 package com.drimmi.rtb;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Reader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-public class RequestExecutor {
+public class HTTPRequestExecutor implements JobResult {
 
     HttpClient client;
 
@@ -31,7 +18,7 @@ public class RequestExecutor {
 
     CompletableFuture[] futures;
 
-    public RequestExecutor(EmitterConfiguration config) {
+    public HTTPRequestExecutor(EmitterConfiguration config) {
         this.result = new ProcessResult();
         client = HttpClient.newBuilder()
                 //.executor(Executors.newFixedThreadPool(config.getNumOfParallelWorker()))
@@ -43,22 +30,20 @@ public class RequestExecutor {
                 .timeout(Duration.ofMillis(config.getRequestTimeout()));
     }
 
-    public ProcessResult execute(RTBRequest rtbRequest) {
+    public void execute(RTBRequest rtbRequest) {
         CompletableFuture.allOf(
             rtbRequest.buildContentStream()
                     .map(s -> this.send(s))
                     .toArray(CompletableFuture[]::new)
         ).join();
-        return result;
     }
 
-    public CompletableFuture send(String body) {
+    public CompletableFuture<Integer> send(String body) {
         HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         return client
                 .sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::statusCode)
-                //.thenAccept(this::accumulateResult)
                 .exceptionally(this::onError)
                 .whenComplete(this::accumulateResult)
                 ;
@@ -66,13 +51,12 @@ public class RequestExecutor {
 
     private int onError(Throwable throwable) {
         System.out.println(throwable.getMessage());
-        //result.incrementFailed();
         return 0;
     }
 
     private void accumulateResult(int s, Throwable throwable) {
         if (throwable != null || s == 0) {
-            result.incrementFailed();
+            result.incrementError();
         } else if (s < 300 && s >= 200) {
             result.incrementSuccess();
         } else {
@@ -82,5 +66,15 @@ public class RequestExecutor {
 
     public ProcessResult getResult() {
         return result;
+    }
+
+    @Override
+    public int getNumOfError() {
+        return result.getNumOfError();
+    }
+
+    @Override
+    public int getNumOfSuccess() {
+        return result.getNumOfSuccess();
     }
 }

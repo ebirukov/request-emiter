@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.concurrent.Flow;
@@ -28,9 +27,6 @@ public class RTBRequestGeneratorTest {
     @Mock
     RTBRequest request;
 
-    @Spy
-    ProcessResult processResult;
-
     @Test
     public void startPublish() {
 
@@ -44,11 +40,8 @@ public class RTBRequestGeneratorTest {
         when(request.buildContentStream()).thenReturn(Stream.of(data));
         when(generator.generate()).thenReturn(request);
 
-        RequestExecutor executor = spy(new RequestExecutor(config));
+        HTTPRequestExecutor executor = spy(new HTTPRequestExecutor(config));
         HTTPWorker worker = spy(new HTTPWorker(executor, numOfData, numOfBatch));
-
-        when(executor.getResult()).thenReturn(processResult);
-        when(processResult.getNumOfSuccess()).thenReturn(numOfBatch);
 
         RTBRequestGenerator requestGenerator = new RTBRequestGenerator(generator);
         requestGenerator.subscribe(worker);
