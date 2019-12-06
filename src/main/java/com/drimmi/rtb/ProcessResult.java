@@ -4,14 +4,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class ProcessResult {
 
-    private AtomicInteger numOfError;
-    private AtomicInteger numOfSuccess;
-    private AtomicInteger numOfFailed;
+    private AtomicInteger numOfError = new AtomicInteger(0);
+    private AtomicInteger numOfSuccess = new AtomicInteger(0);
+    private AtomicInteger numOfFailed = new AtomicInteger(0);
 
-    public ProcessResult() {
-        numOfFailed = new AtomicInteger(0);
-        numOfSuccess = new AtomicInteger(0);
-        numOfError = new AtomicInteger(0);
+    private ProcessResult total;
+
+    private void updateTotal() {
+        if (total == null) {
+            total = new ProcessResult();
+        }
+
+        total.numOfError.addAndGet(numOfError.get());
+        total.numOfSuccess.addAndGet(numOfSuccess.get());
+        total.numOfFailed.addAndGet(numOfFailed.get());
+        //System.out.println(this + " total " + total);
+    }
+
+    public void clear() {
+        updateTotal();
+        numOfFailed.set(0);
+        numOfSuccess.set(0);
+        numOfError.set(0);
     }
 
     public int getNumOfSuccess() {
@@ -36,6 +50,10 @@ class ProcessResult {
 
     public void incrementError() {
         numOfError.incrementAndGet();
+    }
+
+    public ProcessResult getTotal() {
+        return total;
     }
 
     @Override

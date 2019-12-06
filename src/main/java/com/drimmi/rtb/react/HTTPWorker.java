@@ -2,6 +2,8 @@ package com.drimmi.rtb.react;
 
 import com.drimmi.rtb.HTTPRequestExecutor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -11,66 +13,78 @@ import static java.util.concurrent.Flow.*;
 
 public class HTTPWorker implements Subscriber<String> {
 
-    private final int numOfRequests;
+    private int numOfBatch;
 
-    int numOfBatch;
+    private Subscription subscription;
 
-    Subscription subscription;
+    private Collection<CompletableFuture> jobFuture;
 
-    AtomicInteger counter = new AtomicInteger(0);
+    private boolean complete = false;
 
-    CompletableFuture[] futures;
+    private final HTTPRequestExecutor executor;
 
-    boolean complete = false;
-
-    HTTPRequestExecutor executor;
+    private int unprocessedCountDown;
 
     public HTTPWorker(HTTPRequestExecutor executor, int numOfRequests, int numOfBatch) {
         this.executor = executor;
-        this.numOfRequests = numOfRequests;
         this.numOfBatch = numOfBatch;
+        this.unprocessedCountDown = numOfRequests;
     }
 
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
-        watchBatchDone();
-        requestData(numOfBatch);
+        Executors.newSingleThreadExecutor().submit(this::watchBatchJobsDone);
+        requestData();
     }
 
-    private void watchBatchDone() {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            while (!complete) {
-                Thread.onSpinWait();
-                if (counter.getAcquire() < numOfBatch) continue;
-                if (Stream.of(futures).filter(Predicate.not(CompletableFuture::isDone)).count() > 0) continue;
-                counter.set(0);
-                requestData(calcNextBatch());
-                //System.out.println(result);
-            }
-        });
+    private void watchBatchJobsDone() {
+        while (!complete || hasUncompletedJobs()) {
+            Thread.onSpinWait();
+            if (jobFuture.size() < numOfBatch) continue;
+            CompletableFuture.allOf(jobFuture.toArray(CompletableFuture[]::new))
+                    .whenComplete(this::requestNextTasks)
+                    .join();
+        }
+        System.out.println("success " + executor.getTotalNumOfSuccess() + " error " + executor.getTotalNumOfError());
+    }
+
+    private void requestNextTasks(Void aVoid, Throwable throwable) {
+        if (throwable != null) {
+            throwable.printStackTrace();
+        }
+        numOfBatch = calcNextBatch();
+        if (executor.getNumOfError() > 0) System.out.println(" numOfError " + executor.getNumOfError() + ": next numOfBatch " + numOfBatch);
+        executor.clear();
+        requestData();
+    }
+
+    private boolean hasUncompletedJobs() {
+        return jobFuture.stream().anyMatch(Predicate.not(CompletableFuture::isDone));
     }
 
     private int calcNextBatch() {
-        var nextNumOfBatch = executor.getNumOfSuccess() > 0 ? executor.getNumOfSuccess() : 1;
-        return nextNumOfBatch;
+        if (executor.getNumOfError() > 0) {
+            numOfBatch -= (numOfBatch / 2);
+        } else {
+            numOfBatch += (numOfBatch / 2);
+        }
+        return Math.min(numOfBatch < 1 ? 1 : numOfBatch, unprocessedCountDown);
     }
 
-    private void requestData(int numOfNextBatch) {
-        numOfBatch = numOfNextBatch;
-        System.out.println("numOfNextBatch " + numOfNextBatch);
-        futures = new CompletableFuture[numOfNextBatch];
+    private void requestData() {
+        jobFuture = new ArrayList<>(numOfBatch);
         subscription.request(numOfBatch);
+        unprocessedCountDown -= numOfBatch;
     }
 
     @Override
     public void onNext(String item) {
         CompletableFuture future = executor.send(item);
-        if (counter.getAcquire() < numOfBatch) {
-            futures[counter.getAndIncrement()] = future;
+        if (jobFuture.size() < numOfBatch) {
+            jobFuture.add(future);
         } else {
-            System.err.println("WTF");
-            counter.set(0);
+            System.err.println("WTF!");
         }
     }
 
@@ -82,7 +96,5 @@ public class HTTPWorker implements Subscriber<String> {
     @Override
     public void onComplete() {
         complete = true;
-        System.out.println("complete");
-        //System.out.println(result);
     }
 }

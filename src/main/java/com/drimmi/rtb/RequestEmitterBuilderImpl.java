@@ -2,15 +2,12 @@ package com.drimmi.rtb;
 
 import com.drimmi.rtb.react.HTTPWorker;
 import com.drimmi.rtb.react.RTBRequestGenerator;
+import com.drimmi.rtb.react.RequestGenerator;
 
-public class RequestEmitterBuilderImpl implements RequestEmitter.RequestEmitterBuilder {
 
-    RequestGenerator generator;
+class RequestEmitterBuilderImpl implements RequestEmitter.RequestEmitterBuilder {
 
-    EmitterConfiguration configuration;
-
-    HTTPRequestExecutor executor ;
-
+    private EmitterConfiguration configuration;
 
     @Override
     public RequestEmitter build() {
@@ -21,7 +18,7 @@ public class RequestEmitterBuilderImpl implements RequestEmitter.RequestEmitterB
 
         requestGenerator.subscribe(worker);
 
-        return new RequestEmitter(generator, configuration, executor, requestGenerator);
+        return new RequestEmitter(executor, requestGenerator);
     }
 
     @Override

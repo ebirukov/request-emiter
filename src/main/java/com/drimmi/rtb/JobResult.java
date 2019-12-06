@@ -6,4 +6,10 @@ public interface JobResult {
 
     int getNumOfSuccess();
 
+    int getTotalNumOfSuccess();
+
+    int getTotalNumOfError();
+
+    void clear();
+
 }

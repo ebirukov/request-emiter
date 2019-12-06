@@ -1,6 +1,5 @@
 package com.drimmi.rtb;
 
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -10,11 +9,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class HTTPRequestExecutor implements JobResult {
 
-    HttpClient client;
+    private HttpClient client;
 
-    ProcessResult result;
+    private ProcessResult result;
 
-    HttpRequest.Builder httpRequestBuilder;
+    private HttpRequest.Builder httpRequestBuilder;
 
     public HTTPRequestExecutor(EmitterConfiguration config) {
         this.result = new ProcessResult();
@@ -28,14 +27,6 @@ public class HTTPRequestExecutor implements JobResult {
                 .timeout(Duration.ofMillis(config.getRequestTimeout()));
     }
 
-    public void execute(RTBRequest rtbRequest) {
-        CompletableFuture.allOf(
-            rtbRequest.buildContentStream()
-                    .map(s -> this.send(s))
-                    .toArray(CompletableFuture[]::new)
-        ).join();
-    }
-
     public CompletableFuture<Integer> send(String body) {
         HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -47,7 +38,7 @@ public class HTTPRequestExecutor implements JobResult {
     }
 
     private int onError(Throwable throwable) {
-        System.out.println(throwable.getMessage());
+        //System.out.println(throwable.getMessage());
         return 0;
     }
 
@@ -61,10 +52,6 @@ public class HTTPRequestExecutor implements JobResult {
         }
     }
 
-    public ProcessResult getResult() {
-        return result;
-    }
-
     @Override
     public int getNumOfError() {
         return result.getNumOfError();
@@ -73,5 +60,22 @@ public class HTTPRequestExecutor implements JobResult {
     @Override
     public int getNumOfSuccess() {
         return result.getNumOfSuccess();
+    }
+
+    @Override
+    public int getTotalNumOfSuccess() {
+        System.out.println(result.getTotal());
+        return result.getTotal().getNumOfSuccess();
+    }
+
+    @Override
+    public int getTotalNumOfError() {
+        return result.getTotal().getNumOfError();
+    }
+
+    @Override
+    public void clear() {
+
+        result.clear();
     }
 }

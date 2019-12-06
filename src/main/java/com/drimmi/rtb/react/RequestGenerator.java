@@ -1,23 +1,14 @@
-package com.drimmi.rtb;
+package com.drimmi.rtb.react;
 
+import com.drimmi.rtb.EmitterConfiguration;
+import com.drimmi.rtb.react.RTBRequest;
 import com.google.openrtb.OpenRtb;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.lang.Thread.*;
 import static java.nio.charset.Charset.*;
@@ -27,11 +18,16 @@ public class RequestGenerator {
 
     private String json;
 
-    OpenRtb.BidRequest.Builder requestBuilder;
+    private OpenRtb.BidRequest.Builder requestBuilder;
     private EmitterConfiguration configuration;
 
     public RequestGenerator(EmitterConfiguration configuration) {
         this.configuration = configuration;
+        buildProto();
+    }
+
+    // TODO: Заменить прототипом
+    private void buildProto() {
         requestBuilder = OpenRtb.BidRequest.newBuilder();
         try (InputStreamReader reader = new InputStreamReader(requireNonNull(currentThread()
                 .getContextClassLoader()

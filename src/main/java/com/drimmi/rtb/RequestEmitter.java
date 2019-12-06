@@ -10,55 +10,28 @@ import java.util.concurrent.TimeoutException;
 
 public class RequestEmitter {
 
-    RequestGenerator generator;
+    private final HTTPRequestExecutor executor;
 
-    EmitterConfiguration configuration;
-
-    HTTPRequestExecutor executor ;
-
-    RTBRequestGenerator rtbRequestGenerator;
+    private final RTBRequestGenerator rtbRequestGenerator;
 
 
-    RequestEmitter(RequestGenerator generator, EmitterConfiguration configuration, HTTPRequestExecutor executor, RTBRequestGenerator rtbRequestGenerator) {
-        this.generator = generator;
-        this.configuration = configuration;
+    RequestEmitter(HTTPRequestExecutor executor, RTBRequestGenerator rtbRequestGenerator) {
         this.executor = executor;
         this.rtbRequestGenerator = rtbRequestGenerator;
     }
 
-    public ProcessResult reactiveProcess() {
-        rtbRequestGenerator.startPublish();
-        return executor.getResult();
+    public CompletableFuture<Void> reactiveProcess() {
+        return CompletableFuture.runAsync(() -> rtbRequestGenerator.startPublish());
     }
 
-    public ProcessResult processRequests() {
-        var processResult = new ProcessResult();
-        for (int i = 0; i < configuration.getBatchSize(); i++) {
-            var rtbRequest = generator.generate();
-            executor.execute(rtbRequest);
-            System.out.println(executor.getResult());
-        }
-        return processResult;
-    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         var configuration = new ConfigurationParser(args).getConfiguration();
         var emitter = RequestEmitter.newBuilder()
                                     .setConfiguration(configuration)
                                     .build();
 
-        CompletableFuture.supplyAsync(emitter::reactiveProcess)
-                .whenComplete(RequestEmitter::result)
-                .join();
-    }
-
-    private static void result(ProcessResult processResult, Throwable throwable) {
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(processResult);
+        emitter.reactiveProcess().join();
+        //TimeUnit.SECONDS.sleep(2);
     }
 
     public static RequestEmitterBuilder newBuilder() {

@@ -1,10 +1,10 @@
-package com.drimmi.rtb;
+package com.drimmi.rtb.react;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-public class RTBRequest {
+class RTBRequest {
 
     private Stream.Builder<String> contentBuilder = Stream.builder();
 
