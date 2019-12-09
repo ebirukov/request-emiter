@@ -1,100 +1,95 @@
 package com.drimmi.rtb.react;
 
 import com.drimmi.rtb.HTTPRequestExecutor;
+import com.drimmi.rtb.JobResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EventListener;
+import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static java.util.concurrent.Flow.*;
 
 public class HTTPWorker implements Subscriber<String> {
 
-    private int numOfBatch;
+    private int batchSize;
 
     private Subscription subscription;
 
     private Collection<CompletableFuture> jobFuture;
 
-    private boolean complete = false;
+    private volatile boolean complete = false;
 
     private final HTTPRequestExecutor executor;
 
+    private final BatchOptimizer batchOptimizer;
+
     private int unprocessedCountDown;
 
-    public HTTPWorker(HTTPRequestExecutor executor, int numOfRequests, int numOfBatch) {
+    private final Collection<WorkerListener> listeners = new ArrayList<>();
+
+    public HTTPWorker(HTTPRequestExecutor executor, int numOfRequests, int batchSize) {
         this.executor = executor;
-        this.numOfBatch = numOfBatch;
+        this.batchOptimizer = executor instanceof JobResult ? new BatchOptimizer(executor) : null;
+        this.batchSize = batchSize;
         this.unprocessedCountDown = numOfRequests;
+    }
+
+    public void addListener(WorkerListener listener) {
+        listeners.add(listener);
     }
 
     @Override
     public void onSubscribe(Subscription subscription) {
         this.subscription = subscription;
         Executors.newSingleThreadExecutor().submit(this::watchBatchJobsDone);
-        requestData();
+        requestData(false);
     }
 
     private void watchBatchJobsDone() {
         while (!complete || hasUncompletedJobs()) {
             Thread.onSpinWait();
-            if (jobFuture.size() < numOfBatch) continue;
+            if (jobFuture.size() < batchSize) continue;
             CompletableFuture.allOf(jobFuture.toArray(CompletableFuture[]::new))
-                    .whenComplete(this::requestNextTasks)
-                    .join();
+                            .whenComplete((r, e) -> requestData(true))
+                            .join();
         }
-        System.out.println("success " + executor.getTotalNumOfSuccess() + " error " + executor.getTotalNumOfError());
-    }
-
-    private void requestNextTasks(Void aVoid, Throwable throwable) {
-        if (throwable != null) {
-            throwable.printStackTrace();
-        }
-        numOfBatch = calcNextBatch();
-        if (executor.getNumOfError() > 0) System.out.println(" numOfError " + executor.getNumOfError() + ": next numOfBatch " + numOfBatch);
-        executor.clear();
-        requestData();
+        listeners.forEach(WorkerListener::onComplete);
     }
 
     private boolean hasUncompletedJobs() {
         return jobFuture.stream().anyMatch(Predicate.not(CompletableFuture::isDone));
     }
 
-    private int calcNextBatch() {
-        if (executor.getNumOfError() > 0) {
-            numOfBatch -= (numOfBatch / 2);
-        } else {
-            numOfBatch += (numOfBatch / 2);
+    private void requestData(boolean needOptimize) {
+        if (batchOptimizer != null && needOptimize) {
+            batchSize = Math.min(batchOptimizer.nextBatch(batchSize), unprocessedCountDown);
         }
-        return Math.min(numOfBatch < 1 ? 1 : numOfBatch, unprocessedCountDown);
-    }
-
-    private void requestData() {
-        jobFuture = new ArrayList<>(numOfBatch);
-        subscription.request(numOfBatch);
-        unprocessedCountDown -= numOfBatch;
+        jobFuture = new ArrayList<>(batchSize);
+        subscription.request(batchSize);
+        unprocessedCountDown -= batchSize;
     }
 
     @Override
     public void onNext(String item) {
         CompletableFuture future = executor.send(item);
-        if (jobFuture.size() < numOfBatch) {
+        if (jobFuture.size() < batchSize) {
             jobFuture.add(future);
         } else {
-            System.err.println("WTF!");
+            throw new RuntimeException("unexpected item: " + item);
         }
     }
 
     @Override
-    public void onError(Throwable throwable) {
-        throwable.printStackTrace();
+    public void onError(Throwable t) {
+        t.printStackTrace();
     }
 
     @Override
     public void onComplete() {
         complete = true;
     }
+
 }
