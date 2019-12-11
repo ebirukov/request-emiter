@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.concurrent.Flow;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -16,16 +18,13 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RTBRequestGeneratorTest {
+public class DataProducerTest {
 
     @Mock
     EmitterConfiguration config;
 
     @Mock
-    RequestGenerator generator;
-
-    @Mock
-    RTBRequest request;
+    RTBRequestGenerator generator;
 
     @Test
     public void startPublish() {
@@ -37,15 +36,17 @@ public class RTBRequestGeneratorTest {
         var numOfData = data.length;
         var numOfBatch = 2;
 
-        when(request.buildContentStream()).thenReturn(Stream.of(data));
-        when(generator.generate()).thenReturn(request);
+        var builder = Stream.<String>builder();
+        Arrays.asList(data).forEach(builder::add);
+        when(generator.constructBuilder()).thenReturn(builder);
+        doCallRealMethod().when(generator).start(any(Consumer.class));
 
         HTTPRequestExecutor executor = spy(new HTTPRequestExecutor(config));
         HTTPWorker worker = spy(new HTTPWorker(executor, numOfData, numOfBatch));
 
-        RTBRequestGenerator requestGenerator = new RTBRequestGenerator(generator);
-        requestGenerator.subscribe(worker);
-        requestGenerator.startPublish();
+        DataProducer dataProducer = new DataProducer(generator);
+        dataProducer.subscribe(worker);
+        dataProducer.startPublish();
 
         verify(worker, timeout(1000)).onSubscribe(any(Flow.Subscription.class));
         var captor = ArgumentCaptor.forClass(String.class);

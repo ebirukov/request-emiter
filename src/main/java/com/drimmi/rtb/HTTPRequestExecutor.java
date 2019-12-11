@@ -18,7 +18,6 @@ public class HTTPRequestExecutor implements JobResult {
     public HTTPRequestExecutor(EmitterConfiguration config) {
         this.result = new ProcessResult();
         client = HttpClient.newBuilder()
-                //.executor(Executors.newFixedThreadPool(config.getNumOfParallelWorker()))
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
@@ -64,7 +63,6 @@ public class HTTPRequestExecutor implements JobResult {
 
     @Override
     public int getTotalNumOfSuccess() {
-        System.out.println(result.getTotal());
         return result.getTotal().getNumOfSuccess();
     }
 

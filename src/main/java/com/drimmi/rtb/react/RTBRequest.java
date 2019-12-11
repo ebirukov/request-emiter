@@ -6,10 +6,14 @@ import java.util.stream.Stream;
 
 class RTBRequest {
 
-    private Stream.Builder<String> contentBuilder = Stream.builder();
+    public Stream.Builder<String> contentBuilder = Stream.builder();
 
     public Stream<String> buildContentStream() {
         return contentBuilder.build();
+    }
+
+    public Stream.Builder<String> getContentBuilder() {
+        return contentBuilder;
     }
 
     public void addContent(String content) {
