@@ -21,16 +21,10 @@ import static org.mockito.Mockito.verify;
 public class DataProducerTest {
 
     @Mock
-    EmitterConfiguration config;
-
-    @Mock
     RTBRequestGenerator generator;
 
     @Test
     public void startPublish() {
-
-        Mockito.when(config.getUrl()).thenReturn("http://test.ru");
-        Mockito.when(config.getRequestTimeout()).thenReturn(EmitterConfiguration.DEFAULT_TIMEOUT);
 
         var data = new String[]{"a", "b", "c", "d", "e", "f"};
         var numOfData = data.length;
@@ -41,7 +35,7 @@ public class DataProducerTest {
         when(generator.constructBuilder()).thenReturn(builder);
         doCallRealMethod().when(generator).start(any(Consumer.class));
 
-        HTTPRequestExecutor executor = spy(new HTTPRequestExecutor(config));
+        HTTPRequestExecutor executor = spy(new HTTPRequestExecutor("http://test.ru", EmitterConfiguration.DEFAULT_TIMEOUT));
         HTTPWorker worker = spy(new HTTPWorker(executor, numOfData, numOfBatch));
 
         DataProducer dataProducer = new DataProducer(generator);

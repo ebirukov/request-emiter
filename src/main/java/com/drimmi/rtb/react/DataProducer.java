@@ -3,8 +3,6 @@ package com.drimmi.rtb.react;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.Subscriber;
 
-import static java.util.concurrent.TimeUnit.*;
-
 public class DataProducer {
 
     private final GenericDataGenerator<String> generator;
@@ -20,17 +18,7 @@ public class DataProducer {
     }
 
     public void startPublish() {
-        generator.start(item -> {
-            //publisher.offer(item, (subscriber, _item) -> { return false; });
-            publisher.submit(item);
-
-        });
-/*        generator.generate().buildContentStream()
-                .forEach(item -> {
-            //publisher.offer(item, (subscriber, _item) -> { return false; });
-            publisher.submit(item);
-
-        });*/
+        generator.start(publisher::submit);
         publisher.close();
     }
 

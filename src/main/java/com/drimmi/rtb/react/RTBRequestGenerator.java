@@ -1,7 +1,6 @@
 package com.drimmi.rtb.react;
 
 import com.drimmi.rtb.EmitterConfiguration;
-import com.drimmi.rtb.react.RTBRequest;
 import com.google.openrtb.OpenRtb;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
@@ -17,13 +16,11 @@ import static java.util.Objects.*;
 
 public class RTBRequestGenerator extends GenericDataGenerator<String> {
 
-    private String json;
-
     private OpenRtb.BidRequest.Builder requestBuilder;
-    private EmitterConfiguration configuration;
+    private final int numOfData;
 
-    public RTBRequestGenerator(EmitterConfiguration configuration) {
-        this.configuration = configuration;
+    public RTBRequestGenerator(int numOfData) {
+        this.numOfData = numOfData;
         buildProto();
     }
 
@@ -44,7 +41,6 @@ public class RTBRequestGenerator extends GenericDataGenerator<String> {
 
     private String ToJson(JsonFormat.Printer jsonPrinter) throws InvalidProtocolBufferException {
         var json = jsonPrinter.print(requestBuilder.build());
-        //System.out.println(json);
         return json;
     }
 
@@ -52,7 +48,7 @@ public class RTBRequestGenerator extends GenericDataGenerator<String> {
     protected Stream.Builder<String> constructBuilder() {
         var contentBuilder = Stream.<String>builder();
         var jsonPrinter = JsonFormat.printer();
-        for (int i = 0; i < configuration.getNumOfRequests(); i++) {
+        for (int i = 0; i < numOfData; i++) {
             try {
                 var id = UUID.randomUUID().toString();
                 requestBuilder.setId(id);

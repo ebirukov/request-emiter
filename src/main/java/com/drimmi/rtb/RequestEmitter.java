@@ -7,7 +7,8 @@ import com.drimmi.rtb.react.RTBRequestGenerator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElseGet;
 
 public class RequestEmitter {
 
@@ -70,12 +71,12 @@ public class RequestEmitter {
         }
 
         private DataProducer createDefaultGenerator() {
-            var generator = new RTBRequestGenerator(configuration);
+            var generator = new RTBRequestGenerator(configuration.getNumOfRequests());
             return new DataProducer(generator);
         }
 
         private HTTPRequestExecutor createDefaultExecutor() {
-            return new HTTPRequestExecutor(configuration);
+            return new HTTPRequestExecutor(configuration.getUrl(), configuration.getRequestTimeout());
         }
 
         public RequestEmitterBuilder setExecutor(HTTPRequestExecutor executor) {
