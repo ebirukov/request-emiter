@@ -3,7 +3,9 @@ package com.drimmi.rtb;
 import com.drimmi.rtb.react.HTTPWorker;
 import com.drimmi.rtb.react.DataProducer;
 import com.drimmi.rtb.react.RTBRequestGenerator;
+import com.google.openrtb.OpenRtb;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -71,8 +73,17 @@ public class RequestEmitter {
         }
 
         private DataProducer createDefaultGenerator() {
-            var generator = new RTBRequestGenerator(configuration.getNumOfRequests());
-            return new DataProducer(generator);
+            try {
+                var dataAdapter = Class.forName("com.drimmi.rtb.RTBRequestPrototype")
+                        .asSubclass(DataPrototypeAdapter.class)
+                        .getDeclaredConstructor()
+                        .newInstance();
+                var generator = new RTBRequestGenerator(configuration.getNumOfRequests(), dataAdapter);
+                return new DataProducer(generator);
+            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                return null;
+            }
+
         }
 
         private HTTPRequestExecutor createDefaultExecutor() {

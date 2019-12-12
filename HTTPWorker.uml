@@ -3,141 +3,144 @@
   <ID>JAVA</ID>
   <OriginalElement>com.drimmi.rtb.react.HTTPWorker</OriginalElement>
   <nodes>
-    <node x="0.0" y="592.0">com.drimmi.rtb.react.RTBRequestGenerator</node>
-    <node x="1506.40625" y="570.0">com.drimmi.rtb.ConfigurationParser</node>
-    <node x="1184.65625" y="204.0">com.drimmi.rtb.HTTPRequestExecutor</node>
-    <node x="1062.330269607843" y="0.0">com.drimmi.rtb.JobResult</node>
-    <node x="157.2499999999999" y="286.0">com.drimmi.rtb.react.GenericDataGenerator</node>
-    <node x="856.4605392156861" y="522.0">com.drimmi.rtb.react.HTTPWorker</node>
-    <node x="425.2499999999999" y="250.0">java.util.concurrent.Flow.Subscriber</node>
-    <node x="1620.0083333333332" y="238.0">com.drimmi.rtb.EmitterConfiguration</node>
-    <node x="709.2499999999999" y="286.0">com.drimmi.rtb.react.WorkerListener</node>
-    <node x="1436.90625" y="952.0">com.drimmi.rtb.RequestEmitter.Builder</node>
-    <node x="258.0" y="558.0">com.drimmi.rtb.react.DataProducer</node>
-    <node x="1269.40625" y="496.0">com.drimmi.rtb.HTTPRequestExecutor.ProcessResult</node>
-    <node x="1346.40625" y="796.0">com.drimmi.rtb.RequestEmitter</node>
-    <node x="917.2499999999999" y="264.0">com.drimmi.rtb.react.BatchOptimizer</node>
+    <node x="1355.8333333333333" y="662.0">com.drimmi.rtb.react.RTBRequestGenerator</node>
+    <node x="1804.9583333333335" y="640.0">com.drimmi.rtb.ConfigurationParser</node>
+    <node x="0.0" y="300.0">com.drimmi.rtb.HTTPRequestExecutor</node>
+    <node x="388.745023148148" y="48.0">com.drimmi.rtb.JobResult</node>
+    <node x="1109.0" y="382.0">com.drimmi.rtb.react.GenericDataGenerator</node>
+    <node x="422.0" y="592.0">com.drimmi.rtb.react.HTTPWorker</node>
+    <node x="825.0" y="346.0">java.util.concurrent.Flow.Subscriber</node>
+    <node x="1786.0833333333333" y="334.0">com.drimmi.rtb.EmitterConfiguration</node>
+    <node x="616.0" y="382.0">com.drimmi.rtb.react.WorkerListener</node>
+    <node x="1091.3333333333333" y="996.0">com.drimmi.rtb.RequestEmitter.Builder</node>
+    <node x="964.8333333333333" y="628.0">com.drimmi.rtb.react.DataProducer</node>
+    <node x="24.0" y="0.0">com.drimmi.rtb.HTTPRequestExecutor.ProcessResult</node>
+    <node x="1000.8333333333333" y="840.0">com.drimmi.rtb.RequestEmitter</node>
+    <node x="356.0" y="360.0">com.drimmi.rtb.react.BatchOptimizer</node>
+    <node x="1485.0833333333333" y="358.0">com.drimmi.rtb.DataPrototypeAdapter</node>
   </nodes>
   <notes />
   <edges>
-    <edge source="com.drimmi.rtb.RequestEmitter" target="com.drimmi.rtb.EmitterConfiguration">
-      <point x="119.60000000000002" y="-53.0" />
-      <point x="1615.50625" y="776.0" />
-      <point x="1847.90625" y="776.0" />
-      <point x="1847.90625" y="476.0" />
-      <point x="1844.8833333333332" y="476.0" />
-      <point x="96.375" y="77.0" />
-    </edge>
     <edge source="com.drimmi.rtb.ConfigurationParser" target="com.drimmi.rtb.EmitterConfiguration">
-      <point x="110.33333333333331" y="-51.0" />
-      <point x="1782.2395833333333" y="476.0" />
-      <point x="1780.6333333333332" y="476.0" />
+      <point x="-2.2737367544323206E-13" y="-51.0" />
+      <point x="1970.458333333333" y="572.0" />
+      <point x="1946.7083333333333" y="572.0" />
       <point x="32.125" y="77.0" />
     </edge>
+    <edge source="com.drimmi.rtb.RequestEmitter" target="com.drimmi.rtb.EmitterConfiguration">
+      <point x="59.799999999999955" y="-53.0" />
+      <point x="1210.1333333333332" y="810.0" />
+      <point x="1794.4583333333335" y="810.0" />
+      <point x="1794.4583333333335" y="572.0" />
+      <point x="1818.2083333333333" y="572.0" />
+      <point x="-96.375" y="77.0" />
+    </edge>
     <edge source="com.drimmi.rtb.react.HTTPWorker" target="com.drimmi.rtb.HTTPRequestExecutor">
-      <point x="110.9375" y="-99.0" />
-      <point x="1144.8980392156861" y="466.0" />
-      <point x="1212.65625" y="466.0" />
-      <point x="-140.0" y="111.0" />
+      <point x="-155.3125" y="-99.0" />
+      <point x="444.1875" y="572.0" />
+      <point x="168.0" y="572.0" />
+      <point x="0.0" y="111.0" />
     </edge>
     <edge source="com.drimmi.rtb.RequestEmitter.Builder" target="com.drimmi.rtb.RequestEmitter">
       <point x="0.0" y="-29.0" />
       <point x="0.0" y="53.0" />
     </edge>
     <edge source="com.drimmi.rtb.HTTPRequestExecutor" target="com.drimmi.rtb.JobResult">
-      <point x="0.0" y="-111.0" />
-      <point x="1352.65625" y="184.0" />
-      <point x="1274.955269607843" y="184.0" />
-      <point x="91.125" y="77.0" />
+      <point x="126.0" y="-111.0" />
+      <point x="294.0" y="270.0" />
+      <point x="419.120023148148" y="270.0" />
+      <point x="-91.125" y="77.0" />
     </edge>
     <edge source="com.drimmi.rtb.react.DataProducer" target="com.drimmi.rtb.react.GenericDataGenerator">
-      <point x="-123.66666666666674" y="-63.0" />
-      <point x="319.83333333333326" y="476.0" />
-      <point x="281.2499999999999" y="476.0" />
-      <point x="0.0" y="29.0" />
+      <point x="0.0" y="-63.0" />
+      <point x="-82.66666666666674" y="29.0" />
     </edge>
     <edge source="com.drimmi.rtb.HTTPRequestExecutor.ProcessResult" target="com.drimmi.rtb.HTTPRequestExecutor">
-      <point x="-72.0" y="-125.0" />
-      <point x="1305.40625" y="476.0" />
-      <point x="1324.65625" y="476.0" />
-      <point x="-28.0" y="111.0" />
+      <point x="72.0" y="125.0" />
+      <point x="204.0" y="280.0" />
+      <point x="210.0" y="280.0" />
+      <point x="42.0" y="-111.0" />
     </edge>
     <edge source="com.drimmi.rtb.react.DataProducer" target="java.util.concurrent.Flow.Subscriber">
-      <point x="123.66666666666663" y="-63.0" />
-      <point x="567.1666666666666" y="476.0" />
-      <point x="491.2499999999999" y="476.0" />
-      <point x="-66.0" y="65.0" />
+      <point x="-123.66666666666674" y="-63.0" />
+      <point x="1026.6666666666665" y="572.0" />
+      <point x="1023.0" y="572.0" />
+      <point x="66.0" y="65.0" />
     </edge>
     <edge source="com.drimmi.rtb.RequestEmitter" target="com.drimmi.rtb.react.HTTPWorker">
-      <point x="-59.80000000000007" y="-53.0" />
-      <point x="1436.1062499999998" y="766.0" />
-      <point x="1033.9605392156861" y="766.0" />
+      <point x="-59.799999999999955" y="-53.0" />
+      <point x="1090.5333333333333" y="810.0" />
+      <point x="599.5" y="810.0" />
       <point x="0.0" y="99.0" />
     </edge>
     <edge source="com.drimmi.rtb.react.HTTPWorker" target="java.util.concurrent.Flow.Subscriber">
-      <point x="-155.3125" y="-99.0" />
-      <point x="878.6480392156861" y="476.0" />
-      <point x="623.2499999999999" y="476.0" />
-      <point x="66.0" y="65.0" />
+      <point x="155.3125" y="-99.0" />
+      <point x="754.8125" y="572.0" />
+      <point x="891.0" y="572.0" />
+      <point x="-66.0" y="65.0" />
     </edge>
     <edge source="com.drimmi.rtb.react.HTTPWorker" target="com.drimmi.rtb.react.BatchOptimizer">
-      <point x="22.1875" y="-99.0" />
-      <point x="1056.1480392156861" y="446.0" />
-      <point x="1097.25" y="446.0" />
+      <point x="-22.1875" y="-99.0" />
+      <point x="577.3125" y="542.0" />
+      <point x="536.0" y="542.0" />
       <point x="60.0" y="51.0" />
     </edge>
+    <edge source="com.drimmi.rtb.react.RTBRequestGenerator" target="com.drimmi.rtb.react.GenericDataGenerator">
+      <point x="-133.0" y="-29.0" />
+      <point x="1422.3333333333333" y="572.0" />
+      <point x="1315.6666666666667" y="572.0" />
+      <point x="82.66666666666674" y="29.0" />
+    </edge>
     <edge source="com.drimmi.rtb.RequestEmitter" target="com.drimmi.rtb.ConfigurationParser">
-      <point x="59.799999999999955" y="-53.0" />
-      <point x="1555.7062499999997" y="766.0" />
-      <point x="1671.90625" y="766.0" />
+      <point x="119.59999999999991" y="-53.0" />
+      <point x="1269.9333333333332" y="820.0" />
+      <point x="1970.4583333333335" y="820.0" />
       <point x="0.0" y="51.0" />
     </edge>
-    <edge source="com.drimmi.rtb.react.RTBRequestGenerator" target="com.drimmi.rtb.react.GenericDataGenerator">
-      <point x="0.0" y="-29.0" />
-      <point x="119.0" y="476.0" />
-      <point x="198.58333333333326" y="476.0" />
-      <point x="-82.66666666666663" y="29.0" />
+    <edge source="com.drimmi.rtb.RequestEmitter" target="com.drimmi.rtb.HTTPRequestExecutor">
+      <point x="-119.60000000000014" y="-53.0" />
+      <point x="1030.7333333333331" y="820.0" />
+      <point x="159.526273148148" y="820.0" />
+      <point x="159.526273148148" y="572.0" />
+      <point x="56.0" y="572.0" />
+      <point x="-112.0" y="111.0" />
     </edge>
     <edge source="com.drimmi.rtb.react.HTTPWorker" target="com.drimmi.rtb.JobResult">
-      <point x="66.5625" y="-99.0" />
-      <point x="1100.5230392156861" y="456.0" />
-      <point x="1174.15625" y="456.0" />
-      <point x="1174.15625" y="184.0" />
-      <point x="1214.205269607843" y="184.0" />
-      <point x="30.375" y="77.0" />
-    </edge>
-    <edge source="com.drimmi.rtb.RequestEmitter" target="com.drimmi.rtb.HTTPRequestExecutor">
-      <point x="0.0" y="-53.0" />
-      <point x="1495.90625" y="476.0" />
-      <point x="1492.65625" y="476.0" />
-      <point x="140.0" y="111.0" />
+      <point x="110.9375" y="-99.0" />
+      <point x="710.4375" y="562.0" />
+      <point x="814.5" y="562.0" />
+      <point x="814.5" y="280.0" />
+      <point x="601.370023148148" y="280.0" />
+      <point x="91.125" y="77.0" />
     </edge>
     <edge source="com.drimmi.rtb.RequestEmitter" target="com.drimmi.rtb.react.DataProducer">
-      <point x="-119.60000000000002" y="-53.0" />
-      <point x="1376.3062499999999" y="776.0" />
-      <point x="443.5" y="776.0" />
+      <point x="0.0" y="-53.0" />
       <point x="0.0" y="63.0" />
     </edge>
     <edge source="com.drimmi.rtb.HTTPRequestExecutor" target="com.drimmi.rtb.HTTPRequestExecutor.ProcessResult">
-      <point x="28.0" y="111.0" />
-      <point x="1380.65625" y="476.0" />
-      <point x="1377.40625" y="476.0" />
-      <point x="0.0" y="-125.0" />
+      <point x="-126.0" y="-111.0" />
+      <point x="42.0" y="280.0" />
+      <point x="60.0" y="280.0" />
+      <point x="-72.0" y="125.0" />
+    </edge>
+    <edge source="com.drimmi.rtb.react.RTBRequestGenerator" target="com.drimmi.rtb.DataPrototypeAdapter">
+      <point x="0.0" y="-29.0" />
+      <point x="-70.25" y="53.0" />
     </edge>
     <edge source="com.drimmi.rtb.react.BatchOptimizer" target="com.drimmi.rtb.JobResult">
       <point x="-60.0" y="-51.0" />
-      <point x="977.2499999999999" y="174.0" />
-      <point x="1092.705269607843" y="174.0" />
-      <point x="-91.125" y="77.0" />
+      <point x="416.0" y="280.0" />
+      <point x="479.870023148148" y="280.0" />
+      <point x="-30.375" y="77.0" />
     </edge>
     <edge source="com.drimmi.rtb.react.HTTPWorker" target="com.drimmi.rtb.react.WorkerListener">
-      <point x="-66.5625" y="-99.0" />
-      <point x="967.3980392156861" y="456.0" />
-      <point x="850.2499999999999" y="456.0" />
-      <point x="47.0" y="29.0" />
+      <point x="22.1875" y="-99.0" />
+      <point x="621.6875" y="542.0" />
+      <point x="663.0" y="542.0" />
+      <point x="-47.0" y="29.0" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.8174757281553398" x="939.0" y="505.0" />
+  <settings layout="Hierarchic Group" zoom="0.7839851024208566" x="1031.0" y="527.0" />
   <SelectedNodes />
   <Categories>
     <Category>Constructors</Category>
