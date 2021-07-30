@@ -2,11 +2,10 @@ package com.drimmi.rtb.react;
 
 import com.drimmi.rtb.HTTPRequestExecutor;
 import com.drimmi.rtb.JobResult;
+import com.drimmi.rtb.RequestExecutor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EventListener;
-import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
 
@@ -22,7 +21,7 @@ public class HTTPWorker implements Subscriber<String> {
 
     private volatile boolean complete = false;
 
-    private final HTTPRequestExecutor executor;
+    private final RequestExecutor executor;
 
     private final BatchOptimizer batchOptimizer;
 
@@ -30,9 +29,9 @@ public class HTTPWorker implements Subscriber<String> {
 
     private final Collection<WorkerListener> listeners = new ArrayList<>();
 
-    public HTTPWorker(HTTPRequestExecutor executor, int numOfRequests, int batchSize) {
+    public HTTPWorker(RequestExecutor executor, int numOfRequests, int batchSize) {
         this.executor = executor;
-        this.batchOptimizer = executor instanceof JobResult ? new BatchOptimizer(executor) : null;
+        this.batchOptimizer = executor instanceof JobResult ? new BatchOptimizer((JobResult) executor) : null;
         this.batchSize = batchSize;
         this.unprocessedCountDown = numOfRequests;
     }
