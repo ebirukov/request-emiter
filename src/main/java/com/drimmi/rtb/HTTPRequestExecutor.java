@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class HTTPRequestExecutor implements JobResult, RequestExecutor {
+public class HTTPRequestExecutor implements JobResult {
 
     private final HttpClient client;
 
@@ -27,7 +27,6 @@ public class HTTPRequestExecutor implements JobResult, RequestExecutor {
                 .timeout(Duration.ofMillis(requestTimeout));
     }
 
-    @Override
     public CompletableFuture<Integer> send(String body) {
         HttpRequest httpRequest = httpRequestBuilder.POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
